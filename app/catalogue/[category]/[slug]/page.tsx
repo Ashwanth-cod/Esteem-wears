@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
-/* TOOLTIP COMPONENT */
+/* TOOLTIP */
 function Tooltip({
   text,
   children,
@@ -19,8 +19,8 @@ function Tooltip({
       {children}
       <div
         className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2
-        bg-black text-white text-xs px-2 py-1 rounded opacity-0
-        group-hover:opacity-100 transition whitespace-nowrap z-50"
+        bg-gray-900 text-white text-xs px-2 py-1 rounded-md shadow-lg
+        opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50"
       >
         {text}
       </div>
@@ -40,7 +40,11 @@ export default function ProductPage() {
   const categoryKey = category?.toLowerCase();
 
   const products = categoryKey ? dataMap[categoryKey] : undefined;
-  const product = products?.find((p) => p.slug === slug);
+
+  // ✅ FIX: case-insensitive slug match
+  const product = products?.find(
+    (p) => p.slug.toLowerCase() === slug?.toLowerCase(),
+  );
 
   const [activeImg, setActiveImg] = useState(0);
 
@@ -90,22 +94,25 @@ export default function ProductPage() {
         >
           {/* MAIN IMAGE */}
           <div className="relative w-full h-100 group overflow-hidden">
-            <Image
-              src={product.images[activeImg]}
-              alt={product.name}
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 66vw"
-              className="object-contain transition-transform duration-300 group-hover:scale-150"
-            />
+            {product.images?.[activeImg] && (
+              <Image
+                src={product.images[activeImg]}
+                alt={product.name}
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 66vw"
+                className="object-contain transition-transform duration-300 group-hover:scale-150"
+                loading="eager"
+              />
+            )}
 
-            {/* ZOOM LENS EFFECT */}
+            {/* ZOOM OVERLAY */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-black/5 pointer-events-none" />
           </div>
 
           {/* THUMBNAILS */}
           <div className="flex gap-3 mt-4">
-            {product.images.map((img, i) => (
+            {product.images?.map((img, i) => (
               <div
                 key={i}
                 onClick={() => setActiveImg(i)}
@@ -113,7 +120,13 @@ export default function ProductPage() {
                   activeImg === i ? "border-black" : "border-gray-300"
                 }`}
               >
-                <Image src={img} alt="thumb" fill className="object-contain" />
+                <Image
+                  src={img}
+                  alt="thumb"
+                  fill
+                  sizes="64px"
+                  className="object-contain"
+                />
               </div>
             ))}
           </div>
@@ -232,6 +245,7 @@ export default function ProductPage() {
                 src={product.sizeChart}
                 alt="Size Chart"
                 fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-contain"
               />
             </div>

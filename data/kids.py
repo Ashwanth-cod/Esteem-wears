@@ -20,12 +20,6 @@ def fix_slug(slug):
     slug = re.sub(r"\s+", "-", slug)
     return slug
 
-# 🔥 ONLY builds path — DOES NOT TOUCH FILE
-def fix_image(img, slug):
-    filename = os.path.basename(img)
-    return f"/images/{slug}/{filename}"
-
-# 🔥 ONLY creates folder (no checks needed)
 def create_product_folder(slug):
     folder_path = f"../public/images/{slug}"
     os.makedirs(folder_path, exist_ok=True)
@@ -40,8 +34,6 @@ def input_images(slug):
         if img.lower() == "done":
             break
 
-        images.append(fix_image(img, slug))
-
     return images
 
 def input_size_chart(slug):
@@ -49,8 +41,6 @@ def input_size_chart(slug):
 
     if not img:
         return ""
-
-    return fix_image(img, slug)
 
 def input_sizes():
     sizes = []

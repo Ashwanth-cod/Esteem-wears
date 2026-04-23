@@ -3,9 +3,11 @@
     "slug": "Men-Briefs",
     "name": "Esteem Men Cotton Briefs (Combo Pack of 5)",
 
-    "images": ["/images/Men-Briefs/men-brief.png"],
+    "images": [
+      "https://res.cloudinary.com/desmywzoz/image/upload/v1776949185/men-brief_rhvljg.avif"
+    ],
 
-    "sizeChart": "/images/Men-Briefs/size-chart-men-brief.png",
+    "sizeChart": "https://res.cloudinary.com/desmywzoz/image/upload/v1776949538/size-chart-men-brief_zxufiv.jpg",
 
     "sizes": [
       {
