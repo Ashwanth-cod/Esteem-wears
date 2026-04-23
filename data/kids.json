@@ -1,11 +1,9 @@
 [
   {
-    "slug": "-striped-trunk-pack-of-10",
+    "slug": "striped-trunk-pack-of-10",
     "name": "Esteem Girls Innerwear Cotton Striped Trunk Drawer Panties (Pack of 10)",
-    "images": [
-      "/images/-striped-trunk-pack-of-10/image.py"
-    ],
-    "sizeChart": "/images/-striped-trunk-pack-of-10/#",
+    "images": ["/images/striped-trunk-pack-of-10/image.png"],
+    "sizeChart": "/images/striped-trunk-pack-of-10/#",
     "sizes": [
       {
         "size": "1 - 2 years",
@@ -24,7 +22,7 @@
         "price": 399
       },
       {
-        "size": "5 - 6",
+        "size": "5 - 6 years",
         "price": 399
       },
       {
@@ -42,16 +40,16 @@
     ],
     "links": [
       {
+        "platform": "amazon",
+        "seller": "Esteem",
+        "url": "https://www.amazon.in//Esteem-Innerwear-Striped-Panties-Multicolour/dp/B01C5UNIYC",
+        "rating": 4.2
+      },
+      {
         "platform": "flipkart",
         "seller": "Keyar Exports",
         "url": "https://www.flipkart.com/esteem-brief-boys/p/itmeswxxrx8jqszn?pid=KBEESWXYPHYE4RVC",
         "rating": 4.1
-      },
-      {
-        "platform": "amazon",
-        "seller": "Esteem",
-        "url": "https://www.amazon.in//Esteem-Innerwear-Striped-Panties-Multicolour/dp/B01C5UNIYC?dib=eyJ2IjoiMSJ9.WRc9uyYF_YFgDSt8ZLfU-I1uDzSVR5k58FasZJh79PjYUdZZhytr0QV6lbteDhH_h77Pg1AcPuJPHBQLkc1yuUBOdXKcMCWc50SgGHBp7ZTXtJ6LcatGPiOrSJ5byQPcSHC4Mu44r3QqNOiiPGbePBk0Bi0wKGAwghaADU9J_iO0anJJg6q6WyUbaJfem_LrX6e-1uHBlKGta7fBa3KFqmBC7xsuRrHwSYvbj8pI-c_9iN1hf24sjF5qeYISYscb7OyxZUWizYKpxF2ljSurjDlReXlewAXQRDh_IHQ3M1M.Kg3PFnfudfz7MK9ca3Rptfa2Fx6T_GM_TyPPxHLwE9g",
-        "rating": 4.2
       },
       {
         "platform": "meesho",
