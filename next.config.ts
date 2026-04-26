@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["192.168.29.101", "esteemwears.in", "esteemwears.netlify.app"],
+  allowedDevOrigins: [
+    "192.168.29.101",
+    "esteemwears.in",
+    "www.esteemwears.in",
+    "esteemwears.netlify.app",
+  ],
 
   images: {
     remotePatterns: [
