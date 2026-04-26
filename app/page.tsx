@@ -329,8 +329,6 @@ export default function HomePage() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  const atTop = scrollY < 60;
-
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: css }} />

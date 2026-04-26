@@ -29,7 +29,7 @@ export default function Catalogue() {
         <Link href="/catalogue/kids" className="flex-1">
           <motion.div
             whileHover={{ scale: 1.04 }}
-            className="relative aspect-[16/9] border-4 border-black rounded-2xl 
+            className="relative aspect-video border-4 border-black rounded-2xl 
             bg-white flex items-center justify-between px-10 
             overflow-hidden cursor-pointer transition group shadow-md"
           >
@@ -73,7 +73,7 @@ export default function Catalogue() {
         <Link href="/catalogue/men" className="flex-1">
           <motion.div
             whileHover={{ scale: 1.04 }}
-            className="relative aspect-[16/9] border-4 border-black rounded-2xl 
+            className="relative aspect-video border-4 border-black rounded-2xl 
             bg-white flex items-center justify-between px-10 
             overflow-hidden cursor-pointer transition group shadow-md"
           >
