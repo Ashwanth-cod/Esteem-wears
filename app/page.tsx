@@ -483,7 +483,9 @@ export default function HomePage() {
               >
                 Comfort
                 <br />
-                <em style={{ fontStyle: "italic", color: "#c9a96e" }}>Woven</em>
+                <em style={{ fontStyle: "italic", color: "#c9a96e" }}>
+                  Knitted
+                </em>
                 <br />
                 into Every
                 <br />
