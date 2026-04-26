@@ -1,5 +1,5 @@
 "use client";
-export const runtime = "edge";
+
 import { dataMap } from "@/data";
 import Image from "next/image";
 import { motion } from "framer-motion";
