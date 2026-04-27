@@ -24,7 +24,7 @@ export default function Navbar() {
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 100;
-      transition: background 0.4s ease, box-shadow 0.4s ease;
+      transition: background 0.4s ease, box-shadow 0.4s ease, padding 0.4s ease;
     }
     .nav-root.scrolled {
       background: rgba(255,255,255,0.95);
@@ -40,7 +40,7 @@ export default function Navbar() {
       font-weight: 500;
       text-decoration: none;
       position: relative;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.2s ease, color 0.4s ease;
       letter-spacing: 0.01em;
     }
     .nav-link::after {
@@ -61,6 +61,7 @@ export default function Navbar() {
       font-size: 22px;
       text-decoration: none;
       letter-spacing: -0.02em;
+      transition: color 0.4s ease, opacity 0.4s ease;
     }
     .nav-cta {
       font-family: 'DM Sans', sans-serif;
@@ -69,7 +70,7 @@ export default function Navbar() {
       padding: 10px 24px;
       border-radius: 50px;
       text-decoration: none;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.4s ease, color 0.4s ease, opacity 0.4s ease;
       letter-spacing: 0.02em;
     }
     .nav-cta:hover {
@@ -180,10 +181,7 @@ export default function Navbar() {
       {/* Main Nav */}
       <nav
         className={`nav-root ${scrolled ? "scrolled" : "top"}`}
-        style={{
-          padding: scrolled ? "12px 48px" : "20px 48px",
-          transition: "padding 0.4s ease",
-        }}
+        style={{ padding: scrolled ? "12px 48px" : "20px 48px" }}
       >
         <div
           style={{
@@ -194,54 +192,73 @@ export default function Navbar() {
             justifyContent: "space-between",
           }}
         >
+          {/* Logo — invisible at top, visible when scrolled */}
           <Link
             href="/"
             className="nav-logo"
-            style={{ color: scrolled ? "#1a1a1a" : "#fff" }}
+            style={{
+              color: "#1a1a1a",
+              opacity: scrolled ? 1 : 0,
+              pointerEvents: scrolled ? "auto" : "none",
+            }}
           >
             Esteem Innerwears
           </Link>
 
+          {/* Desktop links — invisible at top */}
           <div
             className="desktop-links"
-            style={{ display: "flex", gap: "36px", alignItems: "center" }}
+            style={{
+              display: "flex",
+              gap: "36px",
+              alignItems: "center",
+              opacity: scrolled ? 1 : 0,
+              transition: "opacity 0.4s ease",
+              pointerEvents: scrolled ? "auto" : "none",
+            }}
           >
             {links.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
                 className="nav-link"
-                style={{ color: scrolled ? "#1a1a1a" : "#fff" }}
+                style={{ color: "#1a1a1a" }}
               >
                 {l.label}
               </Link>
             ))}
           </div>
 
+          {/* Right side */}
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            {/* CTA — invisible at top */}
             <Link
               href="/catalogue"
               className="nav-cta desktop-links"
               style={{
-                background: scrolled ? "#1a1a1a" : "#fff",
-                color: scrolled ? "#fff" : "#1a1a1a",
+                background: "#1a1a1a",
+                color: "#fff",
+                opacity: scrolled ? 1 : 0,
+                pointerEvents: scrolled ? "auto" : "none",
               }}
             >
               Shop Now
             </Link>
+
+            {/* Hamburger — invisible at top */}
             <button
               className="hamburger"
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
+              style={{
+                opacity: scrolled ? 1 : 0,
+                pointerEvents: scrolled ? "auto" : "none",
+                transition: "opacity 0.4s ease",
+              }}
             >
-              <span style={{ background: scrolled ? "#1a1a1a" : "#fff" }} />
-              <span style={{ background: scrolled ? "#1a1a1a" : "#fff" }} />
-              <span
-                style={{
-                  background: scrolled ? "#1a1a1a" : "#fff",
-                  width: "16px",
-                }}
-              />
+              <span style={{ background: "#1a1a1a" }} />
+              <span style={{ background: "#1a1a1a" }} />
+              <span style={{ background: "#1a1a1a", width: "16px" }} />
             </button>
           </div>
         </div>
