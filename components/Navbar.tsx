@@ -199,7 +199,7 @@ export default function Navbar() {
             className="nav-logo"
             style={{ color: scrolled ? "#1a1a1a" : "#fff" }}
           >
-            Esteem
+            Esteem Innerwears
           </Link>
 
           <div
