@@ -852,7 +852,7 @@ export default function HomePage() {
                         marginBottom: "4px",
                       }}
                     >
-                      Krishnaswamy P (M)
+                      Krishnaswamy P
                     </div>
                     <div
                       style={{

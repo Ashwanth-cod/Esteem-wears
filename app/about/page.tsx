@@ -289,10 +289,10 @@ export default function About() {
                   fontWeight: 400,
                 }}
               >
-                From Tiruppur&apos;s textile heartland to homes across India,
-                Esteem Innerwear has spent over three decades redefining
-                everyday comfort with organic cotton, precision craftsmanship,
-                and unwavering consistency.
+                From Tiruppur’s textile heartland to homes across India, Esteem
+                Innerwear has spent over three decades redefining everyday
+                comfort with organic cotton, precision craftsmanship, and
+                unwavering consistency.
               </p>
             </div>
           </div>
@@ -316,7 +316,7 @@ export default function About() {
             }}
           >
             {/* Timeline */}
-            <div style={{ flex: "0 0 320px" }}>
+            <div style={{ flex: "0 0 220px" }}>
               <Reveal direction="left">
                 <div style={{ paddingTop: "20px" }}>
                   {[
@@ -332,14 +332,6 @@ export default function About() {
                       year: "2013",
                       event:
                         "Launch on Amazon, Flipkart and Meesho as online retailer",
-                    },
-                    {
-                      year: "2015",
-                      event: "1 Lakh+ products delivered milestone",
-                    },
-                    {
-                      year: "2021",
-                      event: "5 Lakh+ happy customers",
                     },
                     {
                       year: "2024",
@@ -420,10 +412,10 @@ export default function About() {
                     marginBottom: "20px",
                   }}
                 >
-                  Krishnaswamy P , with over 40 years of garment
-                  manufacturing expertise, established Esteem with a singular
-                  vision: deliver comfort that every Indian family deserves,
-                  without compromise on quality or affordability.
+                  Krishnaswamy P , with over 40 years of garment manufacturing
+                  expertise, established Esteem with a singular vision: deliver
+                  comfort that every Indian family deserves, without compromise
+                  on quality or affordability.
                 </p>
               </Reveal>
 
@@ -436,10 +428,10 @@ export default function About() {
                     marginBottom: "20px",
                   }}
                 >
-                  Starting from Tiruppur &mdash; India&apos;s textile capital
-                  &mdash; Esteem grew organically by mastering the craft of
-                  innerwear. The brand focused obsessively on three pillars:
-                  100% organic cotton, skin-safe dyes, and consistent sizing.
+                  Starting from Tiruppur &mdash; India’s textile capital &mdash;
+                  Esteem grew organically by mastering the craft of innerwear.
+                  The brand focused obsessively on three pillars: 100% organic
+                  cotton, skin-safe dyes, and consistent sizing.
                 </p>
               </Reveal>
 
@@ -510,7 +502,7 @@ export default function About() {
                   marginBottom: "56px",
                 }}
               >
-                Krishnaswamy P 
+                Krishnaswamy P
               </h2>
             </Reveal>
 
@@ -605,7 +597,7 @@ export default function About() {
                         margin: 0,
                       }}
                     >
-                      Founder & Visionary Leader
+                      Founder
                     </p>
                   </div>
 
@@ -625,9 +617,9 @@ export default function About() {
                         margin: 0,
                       }}
                     >
-                      &ldquo;Quality is never an accident. It&apos;s a
-                      discipline, a choice, and a responsibility we make every
-                      single day.&rdquo;
+                      &ldquo;Quality is never an accident. It’s a discipline, a
+                      choice, and a responsibility we make every single
+                      day.&rdquo;
                     </p>
                   </div>
                 </div>
@@ -644,7 +636,7 @@ export default function About() {
                       fontFamily: "'Playfair Display', serif",
                     }}
                   >
-                    A Craftsman&apos;s Philosophy
+                    A Craftsman’s Philosophy
                   </h3>
 
                   <div
@@ -662,8 +654,8 @@ export default function About() {
                         margin: 0,
                       }}
                     >
-                      Krishnaswamy P&apos;s journey in textiles began in the
-                      early 1980s, when Tiruppur was transforming into a global
+                      Krishnaswamy P’s journey in textiles began in the early
+                      1980s, when Tiruppur was transforming into a global
                       manufacturing hub. While others chased volume, he pursued
                       mastery.
                     </p>
@@ -679,7 +671,7 @@ export default function About() {
                       For two decades, he built reputation through institutional
                       clients and private labels. But a question lingered: what
                       if he could serve families directly, with the same rigor
-                      he&apos;d applied to bulk orders?
+                      he’d applied to bulk orders?
                     </p>
 
                     <p
@@ -704,11 +696,11 @@ export default function About() {
                         margin: 0,
                       }}
                     >
-                      Today, with his son and a dedicated team, Krishnaswamy
-                      oversees every aspect of the operation &mdash; from cotton
-                      sourcing to final dispatch. That hands-on philosophy,
-                      unchanged for decades, is why every piece bears his stamp
-                      of care.
+                      Today, with his daughter and a dedicated team,
+                      Krishnaswamy oversees every aspect of the operation
+                      &mdash; from cotton sourcing to final dispatch. That
+                      hands-on philosophy, unchanged for decades, is why every
+                      piece bears his stamp of care.
                     </p>
                   </div>
                 </div>
@@ -776,11 +768,7 @@ export default function About() {
             {[
               {
                 title: "100% Organic Cotton",
-                desc: "We don&apos;t compromise on material. Every thread is certified organic, breathable, and designed for year-round comfort across India&apos;s diverse climate.",
-              },
-              {
-                title: "Skin-Safe Dyes",
-                desc: "Hypoallergenic, dermatologist-approved dyes that won&apos;t fade or irritate. Testing standards exceed industry requirements by 2x.",
+                desc: "We don’t compromise on material. Every thread is certified organic, breathable, and designed for year-round comfort across India’s diverse climate.",
               },
               {
                 title: "Precision Craftsmanship",
@@ -788,7 +776,7 @@ export default function About() {
               },
               {
                 title: "Family-First Design",
-                desc: "Innerwear for ages 2 to 80. Every size, every fit, every fabric choice is informed by real family feedback.",
+                desc: "Innerwear for ages 4 to 80. Every size, every fit, every fabric choice is informed by real family feedback.",
               },
               {
                 title: "Consistent Supply",
@@ -796,7 +784,7 @@ export default function About() {
               },
               {
                 title: "Affordable Pricing",
-                desc: "Premium quality shouldn&apos;t require a premium budget. We maintain thin margins to make comfort accessible to every household.",
+                desc: "Premium quality shouldn’t require a premium budget. We maintain thin margins to make comfort accessible to every household.",
               },
             ].map((val, i) => (
               <Reveal key={val.title} direction="up" delay={i * 0.08}>
@@ -1041,19 +1029,19 @@ export default function About() {
                 name: "Amazon",
                 badge: "Prime Seller",
                 color: "#FF9900",
-                desc: "Fast 2-day shipping with Prime. Best for quick reorders.",
+                desc: "Buy 2 products from us on Amazon, get 10% off.",
               },
               {
                 name: "Flipkart",
                 badge: "Golden Seller",
                 color: "#2874F0",
-                desc: "Flipkart Plus benefits. Free returns on all Esteem products.",
+                desc: "Flipkart Plus benefits. Fast 2-day shipping across India.",
               },
               {
                 name: "Meesho",
                 badge: "Top Seller",
                 color: "#9B30D9",
-                desc: "Exclusive Meesho deals. Referral discounts available.",
+                desc: "Available all across India.",
               },
             ].map((p, i) => (
               <Reveal key={p.name} direction="up" delay={i * 0.12}>
@@ -1127,209 +1115,6 @@ export default function About() {
                 </div>
               </Reveal>
             ))}
-          </div>
-        </section>
-
-        {/* ── SUSTAINABILITY ────────────────────────────────────────────── */}
-        <section
-          style={{
-            background: "#f5f0e8",
-            padding: "100px 48px",
-          }}
-        >
-          <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-            <Reveal direction="up">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  marginBottom: "24px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "40px",
-                    height: "1px",
-                    background: "#c9a96e",
-                  }}
-                />
-                <span
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: "#c9a96e",
-                  }}
-                >
-                  Responsibility
-                </span>
-              </div>
-            </Reveal>
-            <Reveal direction="up" delay={0.1}>
-              <h2
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "52px",
-                  fontWeight: 800,
-                  color: "#1a1a1a",
-                  letterSpacing: "-0.02em",
-                  marginBottom: "56px",
-                }}
-              >
-                Committed to the Planet
-              </h2>
-            </Reveal>
-
-            <div
-              className="two-col"
-              style={{
-                display: "flex",
-                gap: "60px",
-                alignItems: "start",
-              }}
-            >
-              <Reveal direction="left" delay={0.2}>
-                <div>
-                  <h3
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: 700,
-                      color: "#1a1a1a",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    Organic Cotton Only
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: "14px",
-                      color: "#7a7a7a",
-                      lineHeight: 1.8,
-                      marginBottom: "20px",
-                      margin: 0,
-                    }}
-                  >
-                    No synthetic pesticides or fertilizers. Every cotton bale is
-                    certified by third-party auditors. This protects both farmer
-                    health and soil quality.
-                  </p>
-
-                  <h3
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: 700,
-                      color: "#1a1a1a",
-                      marginBottom: "20px",
-                      marginTop: "40px",
-                    }}
-                  >
-                    Water-Conscious Dyeing
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: "14px",
-                      color: "#7a7a7a",
-                      lineHeight: 1.8,
-                      marginBottom: "20px",
-                      margin: 0,
-                    }}
-                  >
-                    Our facility recycles 85% of water used in the dyeing
-                    process. Chemical runoff is treated before release into
-                    local water systems.
-                  </p>
-
-                  <h3
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: 700,
-                      color: "#1a1a1a",
-                      marginBottom: "20px",
-                      marginTop: "40px",
-                    }}
-                  >
-                    Zero Landfill Commitment
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: "14px",
-                      color: "#7a7a7a",
-                      lineHeight: 1.8,
-                      margin: 0,
-                    }}
-                  >
-                    Fabric offcuts are donated to local communities for reuse.
-                    Packaging uses 100% recyclable and biodegradable materials.
-                  </p>
-                </div>
-              </Reveal>
-
-              <Reveal direction="right" delay={0.3}>
-                <div
-                  style={{
-                    background: "#1a1a1a",
-                    borderRadius: "4px",
-                    padding: "48px 40px",
-                    height: "100%",
-                  }}
-                >
-                  <h3
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: 700,
-                      color: "#fff",
-                      marginBottom: "36px",
-                    }}
-                  >
-                    Environmental Impact (Annual)
-                  </h3>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "28px",
-                    }}
-                  >
-                    {[
-                      { metric: "85%", desc: "Water Recycled in Production" },
-                      { metric: "100%", desc: "Organic Cotton Sourcing" },
-                      { metric: "Zero", desc: "Landfill Waste" },
-                      {
-                        metric: "3.2M",
-                        desc: "Sq. Meters Organic Farms Supported",
-                      },
-                    ].map((item) => (
-                      <div key={item.desc}>
-                        <div
-                          style={{
-                            fontSize: "28px",
-                            fontWeight: 800,
-                            color: "#c9a96e",
-                            fontFamily: "'Playfair Display', serif",
-                          }}
-                        >
-                          {item.metric}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "12px",
-                            color: "rgba(255,255,255,0.4)",
-                            marginTop: "4px",
-                            letterSpacing: "0.04em",
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          {item.desc}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </Reveal>
-            </div>
           </div>
         </section>
 
@@ -1518,10 +1303,10 @@ export default function About() {
                 Esteem will expand its product range beyond innerwear into
                 everyday essentials &mdash; all guided by the same principles of
                 organic materials, ethical production, and family-first design.
-                We&apos;re exploring direct-to-consumer channels while
-                strengthening partnerships with e-commerce platforms. Most
-                importantly, we remain committed to the craftspeople, farmers,
-                and families who&apos;ve trusted us with their comfort.
+                We’re exploring direct-to-consumer channels while strengthening
+                partnerships with e-commerce platforms. Most importantly, we
+                remain committed to the craftspeople, farmers, and families
+                who’ve trusted us with their comfort.
               </p>
             </Reveal>
 
@@ -1566,17 +1351,14 @@ export default function About() {
                   marginBottom: "36px",
                 }}
               >
-                Reach out to our customer care team at
-                ashclothing@gmail.com or visit our FAQ section. We&apos;re
-                here to help, Monday to Saturday, 9 AM to 6 PM IST.
+                Reach out to our customer care team at ashclothing@gmail.com or
+                visit our FAQ section. We’re here to help, Monday to Saturday, 9
+                AM to 6 PM IST.
               </p>
             </Reveal>
 
             <Reveal direction="up" delay={0.2}>
-              <a
-                href="mailto:ashclothing@gmail.com"
-                className="cta-primary"
-              >
+              <a href="mailto:ashclothing@gmail.com" className="cta-primary">
                 Get in Touch
               </a>
             </Reveal>

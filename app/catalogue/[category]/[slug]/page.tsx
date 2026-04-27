@@ -1130,9 +1130,7 @@ export default function ProductPage() {
                       animation: "iconBounce 3s ease-in-out infinite",
                       flexShrink: 0,
                     }}
-                  >
-                    🌿
-                  </div>
+                  ></div>
                   <div>
                     <div
                       style={{
@@ -1150,7 +1148,7 @@ export default function ProductPage() {
                         lineHeight: 1.7,
                       }}
                     >
-                      Skin-safe dyes · Hypoallergenic · Sustainably sourced
+                      Skin-safe dyes · Sustainably sourced
                     </div>
                   </div>
                 </div>

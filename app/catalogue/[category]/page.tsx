@@ -742,7 +742,7 @@ export default function CategoryPage({
           >
             {products.map((product, i) => (
               <ProductCard
-                key={product.slug}
+                key={`${product.slug}-${i}`}
                 product={product}
                 categoryKey={key}
                 index={i}

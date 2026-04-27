@@ -120,14 +120,14 @@ export default function Catalogue() {
       name: "Kids",
       desc: "Ages 2 - 12",
       icon: "👕",
-      products: "12+ Products",
+      products: "15+ Products",
       slug: "kids",
     },
     {
       name: "Men",
       desc: "Premium Comfort",
       icon: "👔",
-      products: "15+ Products",
+      products: "4 Products",
       slug: "men",
     },
   ];
