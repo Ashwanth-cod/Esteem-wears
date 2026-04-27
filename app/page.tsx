@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 
 function useInView(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
@@ -18,7 +19,7 @@ function useInView(threshold = 0.15) {
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
+  }, [threshold]);
   return { ref, visible };
 }
 
@@ -413,30 +414,6 @@ const HERO_STATS = [
   { n: "4.1", s: "★", l: "Avg Rating" },
 ];
 
-const FLOATING_BADGES = [
-  {
-    label: "Prime Seller",
-    sub: "Amazon",
-    top: "24px",
-    left: "-64px",
-    delay: 0,
-  },
-  {
-    label: "Golden Seller",
-    sub: "Flipkart",
-    top: "45%",
-    right: "-64px",
-    delay: 1,
-  },
-  {
-    label: "Top Seller",
-    sub: "Meesho",
-    bottom: "80px",
-    left: "-64px",
-    delay: 2,
-  },
-];
-
 export default function HomePage() {
   return (
     <>
@@ -615,233 +592,97 @@ export default function HomePage() {
                 Trusted by over one lakh families across India.
               </p>
 
-              <div
-                className="hero-line-4"
-                style={{
-                  display: "flex",
-                  gap: "14px",
-                  flexWrap: "wrap",
-                  marginBottom: "56px",
-                }}
-              >
-                <a className="cta-primary" href="catalogue">
-                  Shop Collection
-                </a>
-                <a className="cta-ghost" href="#story">
-                  Our Story
-                </a>
-              </div>
-
               {/* Mini stats */}
-              <div
-                className="hero-line-4"
-                style={{
-                  display: "flex",
-                  gap: "0",
-                  paddingTop: "36px",
-                  borderTop: "1px solid rgba(255,255,255,0.07)",
-                  flexWrap: "wrap",
-                }}
-              >
-                {HERO_STATS.map((s, i) => (
-                  <div
-                    key={s.l}
-                    style={{
-                      paddingRight: "40px",
-                      marginRight: "40px",
-                      borderRight:
-                        i < 2 ? "1px solid rgba(255,255,255,0.08)" : "none",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontFamily: "'Playfair Display', serif",
-                        fontSize: "32px",
-                        fontWeight: 800,
-                        color: "#c9a96e",
-                        lineHeight: 1,
-                      }}
-                    >
-                      {s.n}
-                      {s.s}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "11px",
-                        color: "rgba(255,255,255,0.35)",
-                        marginTop: "6px",
-                        fontWeight: 500,
-                        letterSpacing: "0.06em",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      {s.l}
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* RIGHT — geometric visual */}
             <div
               className="hero-visual"
-              style={{ flex: "0 0 400px", position: "relative" }}
+              style={{
+                flex: "1 1 420px",
+                maxWidth: "420px",
+                position: "relative",
+                width: "100%",
+              }}
             >
               <div
                 style={{
-                  width: "380px",
-                  height: "500px",
-                  border: "1px solid rgba(201,169,110,0.2)",
-                  borderRadius: "4px",
-                  background:
-                    "linear-gradient(145deg, rgba(201,169,110,0.06), rgba(255,255,255,0.02))",
+                  width: "100%",
+                  height: "clamp(420px, 70vh, 520px)",
+                  borderRadius: "8px",
                   position: "relative",
                   overflow: "hidden",
                   display: "flex",
                   flexDirection: "column",
-                  justifyContent: "flex-end",
-                  padding: "36px",
+                  justifyContent: "flex-center",
+                  padding: "clamp(30px, 4vw, 36px)",
                 }}
               >
                 <div
-                  className="pulse-ring"
+                  className="hero-line-4"
                   style={{
-                    position: "absolute",
-                    top: "40px",
-                    right: "40px",
-                    width: "160px",
-                    height: "160px",
-                    border: "1px solid rgba(201,169,110,0.15)",
-                    borderRadius: "50%",
-                  }}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "65px",
-                    right: "65px",
-                    width: "110px",
-                    height: "110px",
-                    border: "1px solid rgba(201,169,110,0.1)",
-                    borderRadius: "50%",
-                  }}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "95px",
-                    right: "95px",
-                    width: "50px",
-                    height: "50px",
-                    background: "rgba(201,169,110,0.12)",
-                    borderRadius: "50%",
-                  }}
-                />
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <div
-                    key={i}
-                    style={{
-                      position: "absolute",
-                      left: "36px",
-                      right: "36px",
-                      top: `${200 + i * 36}px`,
-                      height: "1px",
-                      background: "rgba(255,255,255,0.04)",
-                    }}
-                  />
-                ))}
-                <div
-                  style={{
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: "4px",
-                    padding: "20px 24px",
-                    position: "relative",
+                    display: "flex",
+                    gap: "16px",
+                    flexWrap: "wrap",
                   }}
                 >
-                  <div
-                    style={{
-                      fontSize: "10px",
-                      fontWeight: 700,
-                      letterSpacing: "0.14em",
-                      textTransform: "uppercase",
-                      color: "#c9a96e",
-                      marginBottom: "10px",
-                      fontFamily: "'DM Sans', sans-serif",
-                    }}
-                  >
-                    Material Standard
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: 700,
-                      color: "#fff",
-                      fontFamily: "'Playfair Display', serif",
-                      marginBottom: "6px",
-                    }}
-                  >
-                    100% Organic Cotton
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "12px",
-                      color: "rgba(255,255,255,0.4)",
-                      fontFamily: "'DM Sans', sans-serif",
-                      display: "flex",
-                      gap: "16px",
-                    }}
-                  >
-                    <span>Skin-safe dyes</span>
-                    <span style={{ color: "rgba(255,255,255,0.2)" }}>·</span>
-                    <span>Hypoallergenic</span>
-                  </div>
+                  <Link href="/catalogue" className="cta-primary">
+                    Shop Collection
+                  </Link>
+
+                  <Link href="#story" className="cta-ghost">
+                    Our Story
+                  </Link>
+                </div>
+
+                <div
+                  className="hero-line-4"
+                  style={{
+                    display: "flex",
+                    gap: "0",
+                    paddingTop: "36px",
+                    borderTop: "1px solid rgba(255,255,255,0.07)",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {HERO_STATS.map((s, i) => (
+                    <div
+                      key={s.l}
+                      style={{
+                        paddingRight: "40px",
+                        marginRight: "40px",
+                        borderRight:
+                          i < 2 ? "1px solid rgba(255,255,255,0.08)" : "none",
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontFamily: "'Playfair Display', serif",
+                          fontSize: "32px",
+                          fontWeight: 800,
+                          color: "#c9a96e",
+                          lineHeight: 1,
+                        }}
+                      >
+                        {s.n}
+                        {s.s}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: "11px",
+                          color: "rgba(255,255,255,0.35)",
+                          marginTop: "6px",
+                          fontWeight: 500,
+                          letterSpacing: "0.06em",
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {s.l}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-
-              {/* Floating badges — GPU-composited */}
-              {FLOATING_BADGES.map((b) => (
-                <div
-                  key={b.label}
-                  className={`float-badge float-badge-${b.delay}`}
-                  style={{
-                    position: "absolute",
-                    top: b.top,
-                    left: (b as any).left,
-                    right: (b as any).right,
-                    bottom: (b as any).bottom,
-                    background: "rgba(20,20,20,0.95)",
-                    border: "1px solid rgba(201,169,110,0.25)",
-                    borderRadius: "4px",
-                    padding: "12px 18px",
-                    minWidth: "140px",
-                    transform: "translateZ(0)",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: "13px",
-                      fontWeight: 700,
-                      color: "#fff",
-                      fontFamily: "'DM Sans', sans-serif",
-                      marginBottom: "2px",
-                    }}
-                  >
-                    {b.label}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "11px",
-                      color: "#c9a96e",
-                      fontFamily: "'DM Sans', sans-serif",
-                      fontWeight: 500,
-                      letterSpacing: "0.04em",
-                    }}
-                  >
-                    {b.sub}
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
 

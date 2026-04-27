@@ -597,22 +597,22 @@ export default function Catalogue() {
                   flexWrap: "wrap",
                 }}
               >
-                <a
+                <Link
                   className="cta-primary"
                   href="https://www.meesho.com/EsteemWears"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   Shop Meesho
-                </a>
-                <a
+                </Link>
+                <Link
                   className="cta-primary"
                   href="https://www.amazon.in/s?rh=n%3A1571271031%2Cp_4%3AEsteem"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   Shop Amazon
-                </a>
+                </Link>
               </div>
             </Reveal>
           </div>

@@ -105,9 +105,9 @@ export default function Footer() {
               </p>
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
                 {platforms.map((p) => (
-                  <a key={p.label} href={p.href} className="platform-badge">
+                  <Link key={p.label} href={p.href} className="platform-badge">
                     {p.label}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -207,14 +207,14 @@ export default function Footer() {
               >
                 Web Dude,
               </span>
-              <a
+              <Link
                 href="https://neohive.in"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="neohive-link"
               >
                 Neohive Technologies
-              </a>
+              </Link>
             </p>
           </div>
         </div>

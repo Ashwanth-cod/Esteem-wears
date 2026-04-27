@@ -90,7 +90,7 @@ function MagneticBtn({
     if (btnRef.current) btnRef.current.style.transform = "translate(0,0)";
   };
   const inner = href ? (
-    <a
+    <Link
       href={href}
       target={target}
       rel={rel}
@@ -102,7 +102,7 @@ function MagneticBtn({
       }}
     >
       {children}
-    </a>
+    </Link>
   ) : (
     <button
       onClick={onClick}
@@ -1538,9 +1538,9 @@ export default function ProductPage() {
                   >
                     Detailed size chart available on the store page. Click{" "}
                     <strong style={{ color: "#c9a96e" }}>
-                      <a href="#stores" style={{ color: "inherit" }}>
+                      <Link href="#stores" style={{ color: "inherit" }}>
                         Shop Now
-                      </a>
+                      </Link>
                     </strong>{" "}
                     above to see complete measurements.
                   </p>
