@@ -599,19 +599,19 @@ export default function Catalogue() {
               >
                 <a
                   className="cta-primary"
-                  href="https://amazon.in"
+                  href="https://www.meesho.com/EsteemWears"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Shop Meesho
+                </a>
+                <a
+                  className="cta-primary"
+                  href="https://www.amazon.in/s?rh=n%3A1571271031%2Cp_4%3AEsteem"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   Shop Amazon
-                </a>
-                <a
-                  className="cta-primary"
-                  href="https://flipkart.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Shop Flipkart
                 </a>
               </div>
             </Reveal>
