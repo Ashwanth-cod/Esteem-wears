@@ -1,7 +1,7 @@
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   title: {
@@ -24,18 +24,17 @@ export const metadata: Metadata = {
   ],
 
   authors: [{ name: "Esteem Innerwear" }],
-
   creator: "Esteem Innerwear",
-
   publisher: "Esteem Innerwear",
 
-  metadataBase: new URL("https://your-domain.com"),
+  // 🔥 FIX THIS BEFORE PRODUCTION
+  metadataBase: new URL("https://esteemwears.in"),
 
   openGraph: {
     title: "Esteem Innerwear - Comfortable Everyday Wear",
     description:
       "Shop premium cotton innerwear for men and kids. Soft, durable, and affordable daily comfort wear.",
-    url: "https://your-domain.com",
+    url: "https://esteemwears.in",
     siteName: "Esteem Innerwear",
     images: [
       {
@@ -61,12 +60,15 @@ export const metadata: Metadata = {
 
   icons: {
     icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
   },
+};
 
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-  },
+// ✅ CORRECT PLACE (fixes your warning + improves perf)
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
@@ -78,7 +80,8 @@ export default function RootLayout({
     <html lang="en">
       <body className="flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-1 p-6">{children}</main>
+        {/* 🔥 removed unnecessary padding for better layout control */}
+        <main className="flex-1">{children}</main>
         <Footer />
       </body>
     </html>
