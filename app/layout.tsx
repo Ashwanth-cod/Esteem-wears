@@ -1,7 +1,15 @@
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import dynamic from "next/dynamic";
 import type { Metadata, Viewport } from "next";
+
+// 🚀 Lazy load non-critical components
+const Navbar = dynamic(() => import("@/components/Navbar"), {
+  ssr: true,
+});
+
+const Footer = dynamic(() => import("@/components/Footer"), {
+  ssr: true,
+});
 
 export const metadata: Metadata = {
   title: {
@@ -27,7 +35,6 @@ export const metadata: Metadata = {
   creator: "Esteem Innerwear",
   publisher: "Esteem Innerwear",
 
-  // 🔥 FIX THIS BEFORE PRODUCTION
   metadataBase: new URL("https://esteemwears.in"),
 
   openGraph: {
@@ -62,13 +69,16 @@ export const metadata: Metadata = {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
   },
+
+  // 🚀 PERFORMANCE BOOST
+  other: {
+    "theme-color": "#ffffff",
+  },
 };
 
-// ✅ CORRECT PLACE (fixes your warning + improves perf)
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export default function RootLayout({
@@ -78,10 +88,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="flex flex-col min-h-screen">
+      {/* 🚀 Reduce layout shift */}
+      <body className="flex flex-col min-h-screen antialiased">
         <Navbar />
-        {/* 🔥 removed unnecessary padding for better layout control */}
+
+        {/* Keep DOM shallow */}
         <main className="flex-1">{children}</main>
+
         <Footer />
       </body>
     </html>

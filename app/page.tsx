@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 function useInView(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
@@ -48,6 +48,7 @@ function Reveal({
         opacity: visible ? 1 : 0,
         transform: visible ? "translate(0)" : transforms[direction],
         transition: `opacity 0.9s ease ${delay}s, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+        willChange: "opacity, transform",
       }}
     >
       {children}
@@ -58,21 +59,30 @@ function Reveal({
 function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0);
   const { ref, visible } = useInView();
+  const rafRef = useRef<number | null>(null);
+
   useEffect(() => {
     if (!visible) return;
-    let start = 0;
     const duration = 1800;
-    const step = 16;
-    const increment = target / (duration / step);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= target) {
+    const startTime = performance.now();
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else {
         setCount(target);
-        clearInterval(timer);
-      } else setCount(Math.floor(start));
-    }, step);
-    return () => clearInterval(timer);
+      }
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
   }, [visible, target]);
+
   return (
     <span ref={ref}>
       {count.toLocaleString()}
@@ -80,6 +90,15 @@ function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
     </span>
   );
 }
+
+const ACCENTS = [
+  "#c9a96e",
+  "#8b9e7a",
+  "#7a8b9e",
+  "#9e7a8b",
+  "#8b7a9e",
+  "#9e8b7a",
+];
 
 function FeatureCard({
   title,
@@ -92,67 +111,16 @@ function FeatureCard({
   delay: number;
   index: number;
 }) {
-  const [hovered, setHovered] = useState(false);
-  const accents = [
-    "#c9a96e",
-    "#8b9e7a",
-    "#7a8b9e",
-    "#9e7a8b",
-    "#8b7a9e",
-    "#9e8b7a",
-  ];
-  const accent = accents[index % accents.length];
+  const accent = ACCENTS[index % ACCENTS.length];
   return (
     <Reveal delay={delay} direction="up">
       <div
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        style={{
-          background: hovered ? "#fff" : "#fafaf7",
-          border: `1px solid ${hovered ? accent : "#e8e2d9"}`,
-          borderRadius: "4px",
-          padding: "36px 32px",
-          transition: "all 0.35s cubic-bezier(0.16,1,0.3,1)",
-          transform: hovered ? "translateY(-6px)" : "translateY(0)",
-          boxShadow: hovered ? `0 20px 60px rgba(0,0,0,0.08)` : "none",
-          cursor: "default",
-          position: "relative",
-          overflow: "hidden",
-        }}
+        className="feature-card"
+        style={{ "--accent": accent } as React.CSSProperties}
       >
-        <div
-          style={{
-            width: "32px",
-            height: "2px",
-            background: accent,
-            marginBottom: "24px",
-            transition: "width 0.35s ease",
-            ...(hovered ? { width: "48px" } : {}),
-          }}
-        />
-        <h3
-          style={{
-            fontSize: "17px",
-            fontWeight: 700,
-            color: "#1a1a1a",
-            marginBottom: "12px",
-            fontFamily: "'DM Sans', sans-serif",
-            letterSpacing: "-0.01em",
-          }}
-        >
-          {title}
-        </h3>
-        <p
-          style={{
-            fontSize: "14px",
-            color: "#7a7a7a",
-            lineHeight: 1.75,
-            margin: 0,
-            fontFamily: "'DM Sans', sans-serif",
-          }}
-        >
-          {desc}
-        </p>
+        <div className="feature-bar" />
+        <h3 className="feature-title">{title}</h3>
+        <p className="feature-desc">{desc}</p>
       </div>
     </Reveal>
   );
@@ -171,37 +139,11 @@ function StatCard({
 }) {
   return (
     <Reveal delay={delay} direction="up">
-      <div
-        style={{
-          borderLeft: "1px solid rgba(255,255,255,0.12)",
-          paddingLeft: "36px",
-        }}
-      >
-        <div
-          style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: "52px",
-            fontWeight: 800,
-            color: "#c9a96e",
-            lineHeight: 1,
-            letterSpacing: "-0.02em",
-          }}
-        >
+      <div className="stat-card">
+        <div className="stat-value">
           <CountUp target={value} suffix={suffix} />
         </div>
-        <div
-          style={{
-            fontSize: "13px",
-            color: "rgba(255,255,255,0.4)",
-            marginTop: "10px",
-            fontFamily: "'DM Sans', sans-serif",
-            fontWeight: 500,
-            letterSpacing: "0.04em",
-            textTransform: "uppercase",
-          }}
-        >
-          {label}
-        </div>
+        <div className="stat-label">{label}</div>
       </div>
     </Reveal>
   );
@@ -226,10 +168,6 @@ const css = `
     from { transform: translateX(0); }
     to   { transform: translateX(-50%); }
   }
-  @keyframes shimmer {
-    0%   { background-position: -400% 0; }
-    100% { background-position: 400% 0; }
-  }
   @keyframes rotateSlow {
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
@@ -242,12 +180,47 @@ const css = `
     0%, 100% { transform: translateY(0); }
     50%       { transform: translateY(-12px); }
   }
+  @keyframes scrollLine {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    50%       { transform: translateY(6px); opacity: 0.4; }
+  }
 
   .hero-line-1 { animation: fadeSlideUp 1s cubic-bezier(0.16,1,0.3,1) 0.1s both; }
   .hero-line-2 { animation: fadeSlideUp 1s cubic-bezier(0.16,1,0.3,1) 0.25s both; }
   .hero-line-3 { animation: fadeSlideUp 1s cubic-bezier(0.16,1,0.3,1) 0.4s both; }
   .hero-line-4 { animation: fadeSlideUp 1s cubic-bezier(0.16,1,0.3,1) 0.55s both; }
   .hero-visual  { animation: fadeIn 1.4s ease 0.3s both; }
+
+  .rotating-ring {
+    will-change: transform;
+    animation: rotateSlow 40s linear infinite;
+  }
+  .rotating-ring-reverse {
+    will-change: transform;
+    animation: rotateSlow 28s linear infinite reverse;
+  }
+  .pulse-ring {
+    will-change: transform, opacity;
+    animation: pulseRing 4s ease-in-out infinite;
+  }
+  .float-badge {
+    will-change: transform;
+  }
+  .float-badge-0 { animation: floatY 3.5s ease-in-out 0s infinite; }
+  .float-badge-1 { animation: floatY 3.5s ease-in-out 0.6s infinite; }
+  .float-badge-2 { animation: floatY 3.5s ease-in-out 1.2s infinite; }
+
+  .marquee-track {
+    will-change: transform;
+    animation: marquee 22s linear infinite;
+    display: flex;
+    white-space: nowrap;
+  }
+
+  .scroll-line {
+    will-change: transform, opacity;
+    animation: scrollLine 2s ease-in-out infinite;
+  }
 
   .cta-primary {
     display: inline-block;
@@ -289,6 +262,75 @@ const css = `
     transform: translateY(-3px);
   }
 
+  /* Feature cards — pure CSS hover, no JS state */
+  .feature-card {
+    background: #fafaf7;
+    border: 1px solid #e8e2d9;
+    border-radius: 4px;
+    padding: 36px 32px;
+    transition: background 0.35s cubic-bezier(0.16,1,0.3,1),
+                border-color 0.35s cubic-bezier(0.16,1,0.3,1),
+                transform 0.35s cubic-bezier(0.16,1,0.3,1),
+                box-shadow 0.35s cubic-bezier(0.16,1,0.3,1);
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+  .feature-card:hover {
+    background: #fff;
+    border-color: var(--accent);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+  }
+  .feature-bar {
+    width: 32px;
+    height: 2px;
+    background: var(--accent);
+    margin-bottom: 24px;
+    transition: width 0.35s ease;
+  }
+  .feature-card:hover .feature-bar {
+    width: 48px;
+  }
+  .feature-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: -0.01em;
+  }
+  .feature-desc {
+    font-size: 14px;
+    color: #7a7a7a;
+    line-height: 1.75;
+    margin: 0;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* Stat cards */
+  .stat-card {
+    border-left: 1px solid rgba(255,255,255,0.12);
+    padding-left: 36px;
+  }
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 800;
+    color: #c9a96e;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .stat-label {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
   .platform-pill {
     display: flex;
     flex-direction: column;
@@ -321,14 +363,81 @@ const css = `
   }
 `;
 
-export default function HomePage() {
-  const [scrollY, setScrollY] = useState(0);
-  useEffect(() => {
-    const fn = () => setScrollY(window.scrollY);
-    window.addEventListener("scroll", fn, { passive: true });
-    return () => window.removeEventListener("scroll", fn);
-  }, []);
+const MARQUEE_ITEMS = [
+  "100% Organic Cotton",
+  "Skin-Safe Dyes",
+  "Family Innerwear",
+  "30+ Years Craftsmanship",
+  "1 Lakh+ Reviews",
+  "Amazon Prime Seller",
+  "Flipkart Golden Seller",
+  "Meesho Top Seller",
+];
 
+const FEATURES = [
+  {
+    title: "100% Organic Cotton",
+    desc: "Only the finest certified organic cotton — soft, breathable, and completely free from harmful chemicals.",
+  },
+  {
+    title: "Skin-Safe Dyes",
+    desc: "Certified hypoallergenic dyes gentle on all skin types, from newborns to seniors.",
+  },
+  {
+    title: "Built to Last",
+    desc: "Decades of garment expertise behind every stitch — engineered for durability without sacrificing comfort.",
+  },
+  {
+    title: "For the Whole Family",
+    desc: "Kids to adults — our full range covers every age, size, and need under one trusted brand.",
+  },
+  {
+    title: "Always Affordable",
+    desc: "Premium quality should never carry a premium price. The best value in Indian innerwear.",
+  },
+  {
+    title: "Reliable Supply",
+    desc: "Strong operational backbone ensures products are always in stock — fast dispatch, no delays.",
+  },
+];
+
+const PLATFORMS = [
+  { name: "Amazon", badge: "Prime Seller", color: "#FF9900" },
+  { name: "Flipkart", badge: "Golden Seller", color: "#2874F0" },
+  { name: "Meesho", badge: "Top Seller", color: "#9B30D9" },
+];
+
+const HERO_STATS = [
+  { n: "40", s: "+", l: "Years Expertise" },
+  { n: "1", s: "L+", l: "Reviews" },
+  { n: "4.1", s: "★", l: "Avg Rating" },
+];
+
+const FLOATING_BADGES = [
+  {
+    label: "Prime Seller",
+    sub: "Amazon",
+    top: "24px",
+    left: "-64px",
+    delay: 0,
+  },
+  {
+    label: "Golden Seller",
+    sub: "Flipkart",
+    top: "45%",
+    right: "-64px",
+    delay: 1,
+  },
+  {
+    label: "Top Seller",
+    sub: "Meesho",
+    bottom: "80px",
+    left: "-64px",
+    delay: 2,
+  },
+];
+
+export default function HomePage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: css }} />
@@ -353,12 +462,12 @@ export default function HomePage() {
             paddingTop: "88px",
           }}
         >
-          {/* Background geometry */}
+          {/* Background geometry — GPU-composited via will-change on CSS classes */}
           <div
             style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
           >
-            {/* Large ring */}
             <div
+              className="rotating-ring"
               style={{
                 position: "absolute",
                 top: "-15%",
@@ -367,10 +476,10 @@ export default function HomePage() {
                 height: "680px",
                 border: "1px solid rgba(201,169,110,0.08)",
                 borderRadius: "50%",
-                animation: "rotateSlow 40s linear infinite",
               }}
             />
             <div
+              className="rotating-ring-reverse"
               style={{
                 position: "absolute",
                 top: "-5%",
@@ -379,10 +488,8 @@ export default function HomePage() {
                 height: "480px",
                 border: "1px solid rgba(201,169,110,0.05)",
                 borderRadius: "50%",
-                animation: "rotateSlow 28s linear infinite reverse",
               }}
             />
-            {/* Gradient glow */}
             <div
               style={{
                 position: "absolute",
@@ -407,7 +514,6 @@ export default function HomePage() {
                 borderRadius: "50%",
               }}
             />
-            {/* Thin vertical lines */}
             {[20, 35, 50, 65, 80].map((pct) => (
               <div
                 key={pct}
@@ -537,11 +643,7 @@ export default function HomePage() {
                   flexWrap: "wrap",
                 }}
               >
-                {[
-                  { n: "40", s: "+", l: "Years Expertise" },
-                  { n: "1", s: "L+", l: "Reviews" },
-                  { n: "4.1", s: "★", l: "Avg Rating" },
-                ].map((s, i) => (
+                {HERO_STATS.map((s, i) => (
                   <div
                     key={s.l}
                     style={{
@@ -585,7 +687,6 @@ export default function HomePage() {
               className="hero-visual"
               style={{ flex: "0 0 400px", position: "relative" }}
             >
-              {/* Main card */}
               <div
                 style={{
                   width: "380px",
@@ -594,7 +695,6 @@ export default function HomePage() {
                   borderRadius: "4px",
                   background:
                     "linear-gradient(145deg, rgba(201,169,110,0.06), rgba(255,255,255,0.02))",
-                  backdropFilter: "blur(20px)",
                   position: "relative",
                   overflow: "hidden",
                   display: "flex",
@@ -603,8 +703,8 @@ export default function HomePage() {
                   padding: "36px",
                 }}
               >
-                {/* Geometric pattern inside */}
                 <div
+                  className="pulse-ring"
                   style={{
                     position: "absolute",
                     top: "40px",
@@ -613,7 +713,6 @@ export default function HomePage() {
                     height: "160px",
                     border: "1px solid rgba(201,169,110,0.15)",
                     borderRadius: "50%",
-                    animation: "pulseRing 4s ease-in-out infinite",
                   }}
                 />
                 <div
@@ -638,8 +737,6 @@ export default function HomePage() {
                     borderRadius: "50%",
                   }}
                 />
-
-                {/* Horizontal rule lines */}
                 {[0, 1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
@@ -653,8 +750,6 @@ export default function HomePage() {
                     }}
                   />
                 ))}
-
-                {/* Bottom info card */}
                 <div
                   style={{
                     background: "rgba(255,255,255,0.05)",
@@ -704,47 +799,23 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Floating badges */}
-              {[
-                {
-                  label: "Prime Seller",
-                  sub: "Amazon",
-                  top: "24px",
-                  left: "-64px",
-                  delay: "0s",
-                },
-                {
-                  label: "Golden Seller",
-                  sub: "Flipkart",
-                  top: "45%",
-                  right: "-64px",
-                  left: "auto",
-                  delay: "0.6s",
-                },
-                {
-                  label: "Top Seller",
-                  sub: "Meesho",
-                  bottom: "80px",
-                  left: "-64px",
-                  top: "auto",
-                  delay: "1.2s",
-                },
-              ].map((b) => (
+              {/* Floating badges — GPU-composited */}
+              {FLOATING_BADGES.map((b) => (
                 <div
                   key={b.label}
+                  className={`float-badge float-badge-${b.delay}`}
                   style={{
                     position: "absolute",
                     top: b.top,
-                    left: b.left,
-                    right: b.right,
-                    bottom: b.bottom,
+                    left: (b as any).left,
+                    right: (b as any).right,
+                    bottom: (b as any).bottom,
                     background: "rgba(20,20,20,0.95)",
                     border: "1px solid rgba(201,169,110,0.25)",
                     borderRadius: "4px",
                     padding: "12px 18px",
-                    backdropFilter: "blur(12px)",
-                    animation: `floatY 3.5s ease-in-out ${b.delay} infinite`,
                     minWidth: "140px",
+                    transform: "translateZ(0)",
                   }}
                 >
                   <div
@@ -800,12 +871,12 @@ export default function HomePage() {
               Scroll
             </span>
             <div
+              className="scroll-line"
               style={{
                 width: "1px",
                 height: "56px",
                 background:
                   "linear-gradient(to bottom, rgba(201,169,110,0.6), transparent)",
-                animation: "floatY 2s ease-in-out infinite",
               }}
             />
           </div>
@@ -819,24 +890,9 @@ export default function HomePage() {
             overflow: "hidden",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              animation: "marquee 22s linear infinite",
-              whiteSpace: "nowrap",
-            }}
-          >
+          <div className="marquee-track">
             {Array(4)
-              .fill([
-                "100% Organic Cotton",
-                "Skin-Safe Dyes",
-                "Family Innerwear",
-                "30+ Years Craftsmanship",
-                "1 Lakh+ Reviews",
-                "Amazon Prime Seller",
-                "Flipkart Golden Seller",
-                "Meesho Top Seller",
-              ])
+              .fill(MARQUEE_ITEMS)
               .flat()
               .map((item, i) => (
                 <span
@@ -869,11 +925,7 @@ export default function HomePage() {
         >
           <div
             className="story-grid"
-            style={{
-              display: "flex",
-              gap: "100px",
-              alignItems: "center",
-            }}
+            style={{ display: "flex", gap: "100px", alignItems: "center" }}
           >
             {/* Left panel */}
             <div style={{ flex: "0 0 400px" }}>
@@ -887,7 +939,6 @@ export default function HomePage() {
                     overflow: "hidden",
                   }}
                 >
-                  {/* Corner accent */}
                   <div
                     style={{
                       position: "absolute",
@@ -910,7 +961,6 @@ export default function HomePage() {
                       borderRight: "1px solid rgba(201,169,110,0.1)",
                     }}
                   />
-
                   <div
                     style={{
                       fontSize: "11px",
@@ -924,7 +974,6 @@ export default function HomePage() {
                   >
                     Founder
                   </div>
-
                   <div
                     style={{
                       fontFamily: "'Playfair Display', serif",
@@ -947,7 +996,6 @@ export default function HomePage() {
                   >
                     Years of mastery
                   </div>
-
                   <div
                     style={{
                       paddingTop: "32px",
@@ -1115,11 +1163,7 @@ export default function HomePage() {
           }}
         >
           <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              pointerEvents: "none",
-            }}
+            style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
           >
             {[15, 30, 45, 60, 75, 90].map((pct) => (
               <div
@@ -1181,20 +1225,19 @@ export default function HomePage() {
               </h2>
             </Reveal>
 
-            <div
-              className="stats-row"
-              style={{
-                display: "flex",
-                gap: "",
-              }}
-            >
+            <div className="stats-row" style={{ display: "flex" }}>
               <StatCard
                 value={100000}
                 suffix="+"
                 label="Customer Reviews"
                 delay={0.1}
               />
-              <StatCard value={4.1} suffix="+" label="Avg Rating" delay={0.1} />
+              <StatCard
+                value={4}
+                suffix=".1+"
+                label="Avg Rating"
+                delay={0.15}
+              />
               <StatCard
                 value={40}
                 suffix="+"
@@ -1275,32 +1318,7 @@ export default function HomePage() {
               gap: "20px",
             }}
           >
-            {[
-              {
-                title: "100% Organic Cotton",
-                desc: "Only the finest certified organic cotton — soft, breathable, and completely free from harmful chemicals.",
-              },
-              {
-                title: "Skin-Safe Dyes",
-                desc: "Certified hypoallergenic dyes gentle on all skin types, from newborns to seniors.",
-              },
-              {
-                title: "Built to Last",
-                desc: "Decades of garment expertise behind every stitch — engineered for durability without sacrificing comfort.",
-              },
-              {
-                title: "For the Whole Family",
-                desc: "Kids to adults — our full range covers every age, size, and need under one trusted brand.",
-              },
-              {
-                title: "Always Affordable",
-                desc: "Premium quality should never carry a premium price. The best value in Indian innerwear.",
-              },
-              {
-                title: "Reliable Supply",
-                desc: "Strong operational backbone ensures products are always in stock — fast dispatch, no delays.",
-              },
-            ].map((f, i) => (
+            {FEATURES.map((f, i) => (
               <FeatureCard
                 key={f.title}
                 title={f.title}
@@ -1313,12 +1331,7 @@ export default function HomePage() {
         </section>
 
         {/* ── PLATFORMS ────────────────────────────────────────────────── */}
-        <section
-          style={{
-            background: "#f5f0e8",
-            padding: "120px 48px",
-          }}
-        >
+        <section style={{ background: "#f5f0e8", padding: "120px 48px" }}>
           <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
             <div style={{ textAlign: "center", marginBottom: "80px" }}>
               <Reveal direction="up">
@@ -1399,11 +1412,7 @@ export default function HomePage() {
                 margin: "0 auto 80px",
               }}
             >
-              {[
-                { name: "Amazon", badge: "Prime Seller", color: "#FF9900" },
-                { name: "Flipkart", badge: "Golden Seller", color: "#2874F0" },
-                { name: "Meesho", badge: "Top Seller", color: "#9B30D9" },
-              ].map((p, i) => (
+              {PLATFORMS.map((p, i) => (
                 <Reveal key={p.name} delay={i * 0.12} direction="up">
                   <div className="platform-pill">
                     <div
@@ -1523,11 +1532,7 @@ export default function HomePage() {
           }}
         >
           <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              pointerEvents: "none",
-            }}
+            style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
           >
             <div
               style={{
