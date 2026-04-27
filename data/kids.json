@@ -2,7 +2,9 @@
   {
     "slug": "striped-trunk-pack-of-10",
     "name": "Esteem Boys and Girls Innerwear Cotton Striped Trunk Drawer Panties (Pack of 10)",
-    "images": ["https://res.cloudinary.com/desmywzoz/image/upload/v1776949546/image_vqsisc.jpg"],
+    "images": [
+      "https://res.cloudinary.com/desmywzoz/image/upload/v1776949546/image_vqsisc.jpg"
+    ],
     "sizeChart": "/images/striped-trunk-pack-of-10/#",
     "sizes": [
       {
@@ -64,6 +66,282 @@
       "100% pure cotton",
       "Non tearable stiching",
       "Vibrantly stripped pack of 10"
+    ]
+  },
+  {
+    "slug": "esteem-boys-cotton-rib-gym-vest-pack-of-4",
+    "name": "Esteem Boys Cotton Rib Gym Vest (Pack of 4)",
+    "images": [
+      "https://res.cloudinary.com/desmywzoz/image/upload/v1777279784/boys-mega-1_fruccs.webp"
+    ],
+    "sizeChart": "",
+    "sizes": [
+      {
+        "size": "4 - 5 years",
+        "price": 389
+      },
+      {
+        "size": "5 - 6 years",
+        "price": 389
+      },
+      {
+        "size": "7 - 8 years",
+        "price": 389
+      },
+      {
+        "size": "8 - 9 years",
+        "price": 389
+      },
+      {
+        "size": "9 - 10 years",
+        "price": 389
+      },
+      {
+        "size": "11 - 12 years",
+        "price": 389
+      },
+      {
+        "size": "13 - 14 years",
+        "price": 389
+      }
+    ],
+    "links": [
+      {
+        "platform": "flipkart",
+        "seller": "KeyarExports",
+        "url": "https://www.flipkart.com/esteem-vest-boys-cotton/p/itm0c040e4f05ed8",
+        "rating": 4.1
+      },
+      {
+        "platform": "meesho",
+        "seller": "Keyar Exports",
+        "url": "https://www.meesho.com/esteem-boys-cotton-rib-gym-vest-pack-of-4/p/2jm34l",
+        "rating": 4.2
+      }
+    ],
+    "details": ["100% fabric", "knitted rib vest", "vibrant pack of 4"]
+  },
+  {
+    "slug": "esteem-boys-cotton-rib-gym-vestpack-of-4",
+    "name": "Esteem Boys Cotton Rib Gym Vest(Pack of 4)",
+    "images": [
+      "https://res.cloudinary.com/desmywzoz/image/upload/v1777280367/boys-mega-2_eng5nv.webp"
+    ],
+    "sizeChart": "",
+    "sizes": [
+      {
+        "size": "4 - 5 years",
+        "price": 382
+      },
+      {
+        "size": "5 - 6 years",
+        "price": 382
+      },
+      {
+        "size": "7 - 8 years",
+        "price": 382
+      },
+      {
+        "size": "8 - 9 years",
+        "price": 382
+      },
+      {
+        "size": "9 - 10 years",
+        "price": 382
+      },
+      {
+        "size": "11 - 12 years",
+        "price": 382
+      },
+      {
+        "size": "13 - 14 years",
+        "price": 382
+      }
+    ],
+    "links": [
+      {
+        "platform": "flipkart",
+        "seller": "KeyarExports",
+        "url": "https://www.flipkart.com/esteem-vest-boys-pure-cotton/p/itma421e87d716aa",
+        "rating": 4.1
+      },
+      {
+        "platform": "meesho",
+        "seller": "Keyar Exports",
+        "url": "https://www.meesho.com/esteem-boys-cotton-rib-gym-vestpack-of-4/p/4mc5zf",
+        "rating": 4.2
+      }
+    ],
+    "details": ["100% fabric", "knitted rib vest", "vibrant pack of 4"]
+  },
+  {
+    "slug": "esteem-kids-boys-innerwear-cotton-brief-combo-pack-of-6",
+    "name": "Esteem Kids Boys Innerwear Cotton Brief Combo (Pack of 6)",
+    "images": [
+      "https://res.cloudinary.com/desmywzoz/image/upload/v1777280682/Esteem_Kids_Boys_Innerwear_Cotton_Brief_Combo_Pack_of_6_a5mtjc.avif"
+    ],
+    "sizeChart": "",
+    "sizes": [
+      {
+        "size": "5 - 6",
+        "price": 289
+      },
+      {
+        "size": "7 - 8",
+        "price": 289
+      },
+      {
+        "size": "9 - 10",
+        "price": 289
+      },
+      {
+        "size": "11 - 12",
+        "price": 289
+      },
+      {
+        "size": "13 - 14",
+        "price": 289
+      },
+      {
+        "size": "15 - 16",
+        "price": 289
+      }
+    ],
+    "links": [
+      {
+        "platform": "meesho",
+        "seller": "Esteem Wears",
+        "url": "https://www.meesho.com/esteem-kids-boys-innerwear-cotton-brief-combo-pack-of-6/p/7ljj7h",
+        "rating": 4.4
+      },
+      {
+        "platform": "amazon",
+        "seller": "Esteem",
+        "url": "https://www.amazon.in/Esteem-Cotton-Innerwear-Boys-Multicolour/dp/B0CYPG8TN2/",
+        "rating": 4.3
+      },
+      {
+        "platform": "flipkart",
+        "seller": "KeyarExports",
+        "url": "https://www.flipkart.com/esteem-brief-boys/p/itmf21e65061ef74",
+        "rating": 4.3
+      }
+    ],
+    "details": ["100% cotton", "Stretchable elastic", "Pack of 6 dark colors"]
+  },
+  {
+    "slug": "esteem-kids-boys-innerwear-cotton-brief-pack-of-6",
+    "name": "Esteem Kids Boys Innerwear Cotton Brief (Pack of 6)",
+    "images": [
+      "https://res.cloudinary.com/desmywzoz/image/upload/v1777281053/boys-brief-6pack-2_lbaugu.jpg"
+    ],
+    "sizeChart": "",
+    "sizes": [
+      {
+        "size": "5 - 6",
+        "price": 289
+      },
+      {
+        "size": "7 - 8",
+        "price": 289
+      },
+      {
+        "size": "9 - 10",
+        "price": 289
+      },
+      {
+        "size": "11 - 12",
+        "price": 289
+      },
+      {
+        "size": "13 - 14",
+        "price": 289
+      },
+      {
+        "size": "15 - 16",
+        "price": 289
+      }
+    ],
+    "links": [
+      {
+        "platform": "Meesho",
+        "seller": "Keyar Exports",
+        "url": "https://www.meesho.com/esteem-kids-boys-innerwear-cotton-brief-pack-of-6/p/uw134",
+        "rating": 4.2
+      },
+      {
+        "platform": "amazon",
+        "seller": "Esteem",
+        "url": "https://www.amazon.in/Esteem-Cotton-Elastic-Briefs-Multicolour/dp/B01KROEPTU/",
+        "rating": 3.9
+      },
+      {
+        "platform": "flipkart",
+        "seller": "KeyarExports",
+        "url": "https://www.flipkart.com/esteem-brief-boys/p/itmexjyh9sazvefq",
+        "rating": 4
+      }
+    ],
+    "details": ["100% cotton", "Stretchable elastic", "Pack of 6 dark colors"]
+  },
+  {
+    "slug": "esteem-kids-boys-innerwear-cotton-brief-pack-of-6",
+    "name": "Esteem Boys and Girls Floral Printed Trunk Drawer",
+    "images": [
+      "https://res.cloudinary.com/desmywzoz/image/upload/v1777281725/Esteem_Girls_Cotton_Innerwear_Drawer_Panty_Pack_Of_10_h9zwmj.avif"
+    ],
+    "sizeChart": "",
+    "sizes": [
+      {
+        "size": "4 - 5",
+        "price": 399
+      },
+      {
+        "size": "5 - 6",
+        "price": 399
+      },
+      {
+        "size": "5 - 6",
+        "price": 399
+      },
+      {
+        "size": "7 - 8",
+        "price": 399
+      },
+      {
+        "size": "8 - 9",
+        "price": 399
+      },
+      {
+        "size": "9 - 10",
+        "price": 399
+      }
+    ],
+    "links": [
+      {
+        "platform": "Meesho",
+        "seller": "Esteem Wears",
+        "url": "https://www.meesho.com/esteem-girls-cotton-innerwear-drawer-panty-pack-of-10/p/uhxm9",
+        "rating": 4.2
+      },
+      {
+        "platform": "amazon",
+        "seller": "Esteem",
+        "url": "https://www.amazon.in/Esteem-Floral-Printed-Trunk-5-6years/dp/B08F826SHQ?th=1&psc=1",
+        "rating": 4.0
+      },
+      {
+        "platform": "flipkart",
+        "seller": "KeyarExports",
+        "url": "https://www.flipkart.com/esteem-panty-girls/p/itmeyb9fyfbzh76w",
+        "rating": 4.1
+      }
+    ],
+    "details": [
+      "100% cotton",
+      "Stretchable elastic",
+      "Pack of 10 dark colors",
+      "Unisex Fit"
     ]
   }
 ]

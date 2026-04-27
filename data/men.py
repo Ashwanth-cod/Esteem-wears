@@ -1,78 +1,46 @@
 import json
 import os
-import shutil
+import re
 
 FILE_PATH = "men.json"
-BASE_IMAGE_DIR = "../public/images"  # adjust if needed
 
 def load_data():
     if not os.path.exists(FILE_PATH):
         return []
     with open(FILE_PATH, "r", encoding="utf-8") as f:
-        try:
-            return json.load(f)
-        except json.JSONDecodeError:
-            return []
+        return json.load(f)
 
 def save_data(data):
     with open(FILE_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
 def fix_slug(slug):
-    return slug.strip().replace(" ", "-")
+    slug = slug.lower()
+    slug = re.sub(r"[^\w\s-]", "", slug)
+    slug = re.sub(r"\s+", "-", slug)
+    return slug
 
-# ✅ FIXED (now uses slug properly)
-def fix_image(img, slug):
-    filename = os.path.basename(img)
-    return f"/images/{slug}/{filename}"
-
-# ✅ CREATE FOLDER
 def create_product_folder(slug):
-    folder_path = os.path.join(BASE_IMAGE_DIR, slug)
-
+    folder_path = f"../public/images/{slug}"
     os.makedirs(folder_path, exist_ok=True)
-
-    print(f"📁 Folder created: {folder_path}")
     return folder_path
 
-def input_images(slug, folder_path):
+def input_images(slug):
     images = []
-    print("\nEnter image file paths (type 'done' to stop):")
+    print("\nEnter image names (example: image.png) (type 'done' to stop):")
 
     while True:
-        img = input("Image path (local file): ").strip()
+        img = input("Image: ").strip()
         if img.lower() == "done":
             break
 
-        if not os.path.exists(img):
-            print("❌ File not found")
-            continue
-
-        filename = os.path.basename(img)
-        dest = os.path.join(folder_path, filename)
-
-        shutil.copy(img, dest)  # copy image into product folder
-
-        images.append(fix_image(filename, slug))
-
     return images
 
-def input_size_chart(slug, folder_path):
-    img = input("\nSize Chart Image path: ").strip()
+def input_size_chart(slug):
+    img = input("\nSize Chart Image (filename only): ").strip()
 
     if not img:
         return ""
-
-    if not os.path.exists(img):
-        print("❌ File not found, skipping size chart")
-        return ""
-
-    filename = os.path.basename(img)
-    dest = os.path.join(folder_path, filename)
-
-    shutil.copy(img, dest)
-
-    return fix_image(filename, slug)
 
 def input_sizes():
     sizes = []
@@ -83,12 +51,7 @@ def input_sizes():
         if size.lower() == "done":
             break
 
-        price = input("Price: ").strip()
-        try:
-            price = int(price)
-        except:
-            print("Invalid price, try again.")
-            continue
+        price = int(input("Price: ").strip())
 
         sizes.append({
             "size": size,
@@ -102,18 +65,13 @@ def input_links():
     print("\nEnter links (type 'done' to stop):")
 
     while True:
-        platform = input("Platform (amazon/flipkart/meesho): ").strip().lower()
+        platform = input("Platform: ").strip().lower()
         if platform == "done":
             break
 
         seller = input("Seller: ").strip()
         url = input("URL: ").strip()
-        rating = input("Rating: ").strip()
-
-        try:
-            rating = float(rating)
-        except:
-            rating = 0
+        rating = float(input("Rating: ").strip())
 
         links.append({
             "platform": platform,
@@ -124,44 +82,30 @@ def input_links():
 
     return links
 
-# ✅ NEW: product details (max 5)
 def input_details():
     details = []
     print("\nEnter product details (max 5, type 'done' to stop):")
 
     while len(details) < 5:
         point = input(f"Point {len(details)+1}: ").strip()
-
         if point.lower() == "done":
             break
-
-        if point:
-            details.append(point)
+        details.append(point)
 
     return details
 
 def main():
-    print("\n=== PRODUCT BUILDER (PRO VERSION) ===\n")
+    print("\n=== PRODUCT BUILDER (ULTRA FAST STATIC MODE) ===\n")
 
     slug = fix_slug(input("Slug: "))
     name = input("Product Name: ").strip()
 
-    # ✅ create folder
-    folder_path = create_product_folder(slug)
+    create_product_folder(slug)  # just ensures folder exists
 
-    # images
-    images = input_images(slug, folder_path)
-
-    # size chart
-    size_chart = input_size_chart(slug, folder_path)
-
-    # sizes
+    images = input_images(slug)
+    size_chart = input_size_chart(slug)
     sizes = input_sizes()
-
-    # links
     links = input_links()
-
-    # details
     details = input_details()
 
     product = {
@@ -178,8 +122,8 @@ def main():
     data.append(product)
     save_data(data)
 
-    print("\n✅ Product added successfully!")
-    print(f"📦 Images stored in /images/{slug}/")
+    print("\n⚡ Done. Zero checks. Zero file dependency.")
+    print(f"📦 Expected images path → /images/{slug}/")
 
 if __name__ == "__main__":
     main()

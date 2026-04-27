@@ -133,7 +133,7 @@ function MagneticBtn({
 /* ─── IMAGE CAROUSEL ─────────────────────────────────────────────────── */
 function ImageCarousel({ images, icon }: { images: string[]; icon?: string }) {
   const [active, setActive] = useState(0);
-  const [prev, setPrev] = useState<number | null>(null);
+  const [prevIdx, setPrevIdx] = useState<number | null>(null); // FIX: renamed from 'prev' to avoid conflict with the go() callback param
   const [dir, setDir] = useState<"left" | "right">("right");
   const [dragging, setDragging] = useState(false);
   const dragStart = useRef(0);
@@ -141,42 +141,41 @@ function ImageCarousel({ images, icon }: { images: string[]; icon?: string }) {
 
   const go = useCallback(
     (next: number, direction: "left" | "right") => {
-      setPrev(active);
+      setPrevIdx(active);
       setDir(direction);
       setActive(next);
     },
     [active],
   );
 
-  const next = useCallback(
+  const goNext = useCallback(
     () => go((active + 1) % images.length, "right"),
     [active, go, images.length],
   );
-  const prev2 = useCallback(
+  const goPrev = useCallback(
     () => go((active - 1 + images.length) % images.length, "left"),
     [active, go, images.length],
   );
 
-  // auto-advance
   useEffect(() => {
     if (images.length <= 1) return;
-    autoRef.current = setInterval(next, 3800);
+    autoRef.current = setInterval(goNext, 3800);
     return () => {
       if (autoRef.current) clearInterval(autoRef.current);
     };
-  }, [next, images.length]);
+  }, [goNext, images.length]);
 
-  const resetAuto = () => {
+  const resetAuto = useCallback(() => {
     if (autoRef.current) clearInterval(autoRef.current);
-    autoRef.current = setInterval(next, 3800);
-  };
+    autoRef.current = setInterval(goNext, 3800);
+  }, [goNext]);
 
   const handleNext = () => {
-    next();
+    goNext();
     resetAuto();
   };
   const handlePrev = () => {
-    prev2();
+    goPrev();
     resetAuto();
   };
 
@@ -213,7 +212,7 @@ function ImageCarousel({ images, icon }: { images: string[]; icon?: string }) {
 
   return (
     <div style={{ userSelect: "none" }}>
-      {/* Main carousel */}
+      {/* Main carousel — FIX: wrapper is position:relative so absolute children stack correctly */}
       <div
         style={{
           position: "relative",
@@ -231,27 +230,34 @@ function ImageCarousel({ images, icon }: { images: string[]; icon?: string }) {
         onTouchStart={(e) => onDragStart(e.touches[0].clientX)}
         onTouchEnd={(e) => onDragEnd(e.changedTouches[0].clientX)}
       >
-        {/* Slides */}
         {images.map((src, i) => {
           const isActive = i === active;
-          const isPrev = i === prev;
-          let translateX = "100%";
+          const isPrev = i === prevIdx;
+          // FIX: slides must be position:absolute to layer on top of each other
+          // Only active and previous slides are rendered visibly; others are hidden off-screen
+          let translateX = dir === "right" ? "100%" : "-100%";
           if (isActive) translateX = "0%";
           else if (isPrev) translateX = dir === "right" ? "-100%" : "100%";
-          const visible = isActive || isPrev;
+
+          const isVisible = isActive || isPrev;
+
           return (
             <div
               key={i}
               style={{
-                position: "relative",
+                position: "absolute", // FIX: was 'relative', causing layout stacking issues
                 top: 0,
                 left: 0,
                 width: "100%",
+                height: "100%",
                 minHeight: "500px",
                 transform: `translateX(${translateX})`,
-                transition: "transform 0.65s cubic-bezier(0.77,0,0.175,1)",
-                opacity: visible ? 1 : 0,
+                transition: isVisible
+                  ? "transform 0.65s cubic-bezier(0.77,0,0.175,1)"
+                  : "none",
+                opacity: isVisible ? 1 : 0,
                 zIndex: isActive ? 2 : isPrev ? 1 : 0,
+                pointerEvents: isActive ? "auto" : "none",
               }}
             >
               <Image
@@ -265,7 +271,7 @@ function ImageCarousel({ images, icon }: { images: string[]; icon?: string }) {
           );
         })}
 
-        {/* Gradient overlays */}
+        {/* Gradient overlay */}
         <div
           style={{
             position: "absolute",
@@ -280,74 +286,43 @@ function ImageCarousel({ images, icon }: { images: string[]; icon?: string }) {
         {/* Arrows */}
         {images.length > 1 && (
           <>
-            <button
-              onClick={handlePrev}
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "16px",
-                transform: "translateY(-50%)",
-                zIndex: 4,
-                width: "48px",
-                height: "48px",
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.92)",
-                border: "1px solid #e0d8cc",
-                fontSize: "28px",
-                lineHeight: "1",
-                color: "#1a1a1a",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
-                transition: "background 0.2s, color 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#c9a96e";
-                e.currentTarget.style.color = "#fff";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.92)";
-                e.currentTarget.style.color = "#1a1a1a";
-              }}
-            >
-              ‹
-            </button>
-            <button
-              onClick={handleNext}
-              style={{
-                position: "absolute",
-                top: "50%",
-                right: "16px",
-                transform: "translateY(-50%)",
-                zIndex: 4,
-                width: "48px",
-                height: "48px",
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.92)",
-                border: "1px solid #e0d8cc",
-                fontSize: "28px",
-                lineHeight: "1",
-                color: "#1a1a1a",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
-                transition: "background 0.2s, color 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#c9a96e";
-                e.currentTarget.style.color = "#fff";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.92)";
-                e.currentTarget.style.color = "#1a1a1a";
-              }}
-            >
-              ›
-            </button>
+            {(["prev", "next"] as const).map((arrow) => (
+              <button
+                key={arrow}
+                onClick={arrow === "prev" ? handlePrev : handleNext}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  [arrow === "prev" ? "left" : "right"]: "16px",
+                  transform: "translateY(-50%)",
+                  zIndex: 4,
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.92)",
+                  border: "1px solid #e0d8cc",
+                  fontSize: "28px",
+                  lineHeight: "1",
+                  color: "#1a1a1a",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+                  transition: "background 0.2s, color 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "#c9a96e";
+                  e.currentTarget.style.color = "#fff";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255,255,255,0.92)";
+                  e.currentTarget.style.color = "#1a1a1a";
+                }}
+              >
+                {arrow === "prev" ? "‹" : "›"}
+              </button>
+            ))}
           </>
         )}
 
@@ -367,6 +342,7 @@ function ImageCarousel({ images, icon }: { images: string[]; icon?: string }) {
             {images.map((_, i) => (
               <button
                 key={i}
+                aria-label={`Go to image ${i + 1}`}
                 onClick={() => {
                   go(i, i > active ? "right" : "left");
                   resetAuto();
@@ -401,9 +377,18 @@ function ImageCarousel({ images, icon }: { images: string[]; icon?: string }) {
           {images.map((src, i) => (
             <div
               key={i}
+              role="button"
+              aria-label={`View image ${i + 1}`}
+              tabIndex={0}
               onClick={() => {
                 go(i, i > active ? "right" : "left");
                 resetAuto();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  go(i, i > active ? "right" : "left");
+                  resetAuto();
+                }
               }}
               style={{
                 width: "80px",
@@ -453,10 +438,6 @@ const css = `
     33% { transform: translateY(-18px) rotate(3deg); }
     66% { transform: translateY(-8px) rotate(-2deg); }
   }
-  @keyframes floatX {
-    0%, 100% { transform: translateX(0px); }
-    50% { transform: translateX(14px); }
-  }
   @keyframes shimmer {
     0% { background-position: -400px 0; }
     100% { background-position: 400px 0; }
@@ -464,10 +445,6 @@ const css = `
   @keyframes pricePulse {
     0%, 100% { text-shadow: 0 0 0px rgba(201,169,110,0); }
     50% { text-shadow: 0 0 30px rgba(201,169,110,0.5); }
-  }
-  @keyframes badgeSlide {
-    from { opacity: 0; transform: translateX(20px); }
-    to { opacity: 1; transform: translateX(0); }
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   @keyframes gradientShift {
@@ -483,14 +460,6 @@ const css = `
     0%, 100% { transform: scale(1) rotate(0deg); }
     25% { transform: scale(1.1) rotate(-3deg); }
     75% { transform: scale(1.05) rotate(2deg); }
-  }
-  @keyframes slideInUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes countUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
   }
 
   .cta-primary {
@@ -527,8 +496,8 @@ const css = `
     box-shadow: 0 16px 48px rgba(201,169,110,0.45);
   }
 
+  /* FIX: size-badge is a <button> natively; removed the stale <span> z-index trick */
   .size-badge {
-    display: inline-block;
     font-family: 'DM Sans', sans-serif;
     font-size: 12px;
     font-weight: 600;
@@ -539,23 +508,10 @@ const css = `
     color: #1a1a1a;
     cursor: pointer;
     transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
-    position: relative;
-    overflow: hidden;
   }
-  .size-badge::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: #c9a96e;
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
-    z-index: 0;
-  }
-  .size-badge:hover::after, .size-badge.active::after { transform: scaleX(1); }
-  .size-badge span { position: relative; z-index: 1; }
   .size-badge:hover, .size-badge.active {
     border-color: #c9a96e;
+    background: #c9a96e;
     color: #1a1a1a;
     transform: translateY(-3px);
     box-shadow: 0 8px 20px rgba(201,169,110,0.25);
@@ -569,6 +525,7 @@ const css = `
     transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
     position: relative;
     overflow: hidden;
+    height: 100%;
   }
   .platform-card::before {
     content: '';
@@ -601,16 +558,17 @@ const css = `
     transform: translateX(8px);
   }
 
-  .shimmer-line {
-    background: linear-gradient(90deg, #f0ebe3 25%, #e8ddd0 50%, #f0ebe3 75%);
-    background-size: 400px 100%;
-    animation: shimmer 1.6s ease-in-out infinite;
-    border-radius: 4px;
-  }
-
+  /* ── RESPONSIVE ─────────────────────────────────────────────────────── */
   @media (max-width: 900px) {
-    .grid-2 { grid-template-columns: 1fr !important; }
+    .grid-2 { grid-template-columns: 1fr !important; gap: 40px !important; }
     .product-grid { grid-template-columns: 1fr !important; }
+    .page-section { padding: 60px 24px !important; }
+    .breadcrumb-section { padding: 20px 24px !important; }
+    .sticky-carousel { position: static !important; }
+  }
+  @media (max-width: 600px) {
+    .product-grid { grid-template-columns: 1fr !important; }
+    .platform-card { padding: 24px 20px !important; }
   }
 `;
 
@@ -636,30 +594,9 @@ interface Product {
   [key: string]: unknown;
 }
 
-/* ─── MAIN COMPONENT ─────────────────────────────────────────────────── */
-export default function ProductPage() {
-  const params = useParams();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [selectedSize, setSelectedSize] = useState<string>("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const category = params?.category as string;
-    const slug = params?.slug as string;
-    let found: Product | undefined;
-    if (category && slug && (dataMap as Record<string, Product[]>)[category]) {
-      found = (dataMap as Record<string, Product[]>)[category].find(
-        (p) => p.slug === slug,
-      );
-    }
-    const t = setTimeout(() => {
-      setLoading(false);
-      if (found) setProduct(found);
-    }, 500);
-    return () => clearTimeout(t);
-  }, [params]);
-
-  const renderStars = (rating: number) => (
+/* ─── STAR RENDERER ──────────────────────────────────────────────────── */
+function StarRating({ rating }: { rating: number }) {
+  return (
     <div style={{ display: "flex", gap: "3px" }}>
       {[1, 2, 3, 4, 5].map((i) => (
         <div
@@ -689,7 +626,65 @@ export default function ProductPage() {
       ))}
     </div>
   );
+}
 
+/* ─── SECTION LABEL ──────────────────────────────────────────────────── */
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+        marginBottom: "12px",
+      }}
+    >
+      <div style={{ width: "40px", height: "1px", background: "#c9a96e" }} />
+      <span
+        style={{
+          fontSize: "11px",
+          fontWeight: 700,
+          letterSpacing: "0.18em",
+          textTransform: "uppercase",
+          color: "#c9a96e",
+        }}
+      >
+        {children}
+      </span>
+    </div>
+  );
+}
+
+const platformColors: Record<string, string> = {
+  amazon: "#FF9900",
+  flipkart: "#2874F0",
+  meesho: "#F43397",
+};
+
+/* ─── MAIN COMPONENT ─────────────────────────────────────────────────── */
+export default function ProductPage() {
+  const params = useParams();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const category = params?.category as string;
+    const slug = params?.slug as string;
+    let found: Product | undefined;
+    if (category && slug && (dataMap as Record<string, Product[]>)[category]) {
+      found = (dataMap as Record<string, Product[]>)[category].find(
+        (p) => p.slug === slug,
+      );
+    }
+    const t = setTimeout(() => {
+      setLoading(false);
+      if (found) setProduct(found);
+    }, 500);
+    return () => clearTimeout(t);
+  }, [params]);
+
+  /* ── LOADING ─────────────────────────────────────────────────────────── */
   if (loading)
     return (
       <div
@@ -747,6 +742,7 @@ export default function ProductPage() {
       </div>
     );
 
+  /* ── NOT FOUND ───────────────────────────────────────────────────────── */
   if (!product)
     return (
       <div
@@ -791,20 +787,27 @@ export default function ProductPage() {
       </div>
     );
 
+  /* ── DERIVED DATA ────────────────────────────────────────────────────── */
+  // FIX: Deduplicate products/links by platform+seller to prevent duplicate key crashes
+  const uniqueLinks = product.links.filter(
+    (link, idx, arr) =>
+      arr.findIndex(
+        (l) =>
+          l.platform === link.platform &&
+          l.seller === link.seller &&
+          l.url === link.url,
+      ) === idx,
+  );
+
   const lowestPrice = Math.min(...product.sizes.map((s) => s.price));
   const selectedPrice = product.sizes.find(
     (s) => s.size === selectedSize,
   )?.price;
   const avgRating =
-    product.links.reduce((a, l) => a + l.rating, 0) / product.links.length;
+    uniqueLinks.reduce((a, l) => a + l.rating, 0) / uniqueLinks.length;
   const images = product.images || [];
 
-  const platformColors: Record<string, string> = {
-    amazon: "#FF9900",
-    flipkart: "#2874F0",
-    meesho: "#F43397",
-  };
-
+  /* ── RENDER ──────────────────────────────────────────────────────────── */
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: css }} />
@@ -818,7 +821,7 @@ export default function ProductPage() {
           fontFamily: "'DM Sans', sans-serif",
         }}
       >
-        {/* ── AMBIENT BACKGROUND PARTICLES ─────────────────────────── */}
+        {/* ── AMBIENT PARTICLES ─────────────────────────────────────────── */}
         <div
           style={{
             position: "fixed",
@@ -835,7 +838,6 @@ export default function ProductPage() {
                 h: 300,
                 top: "10%",
                 left: "-5%",
-                right: undefined,
                 dur: "8s",
                 color: "rgba(201,169,110,0.06)",
               },
@@ -843,7 +845,6 @@ export default function ProductPage() {
                 w: 200,
                 h: 200,
                 top: "60%",
-                left: undefined,
                 right: "-3%",
                 dur: "12s",
                 color: "rgba(201,169,110,0.04)",
@@ -852,7 +853,6 @@ export default function ProductPage() {
                 w: 150,
                 h: 150,
                 top: "30%",
-                left: undefined,
                 right: "10%",
                 dur: "10s",
                 color: "rgba(201,169,110,0.05)",
@@ -884,8 +884,9 @@ export default function ProductPage() {
           ))}
         </div>
 
-        {/* ── BREADCRUMB ────────────────────────────────────────────── */}
+        {/* ── BREADCRUMB ────────────────────────────────────────────────── */}
         <section
+          className="breadcrumb-section"
           style={{
             padding: "28px 48px",
             borderBottom: "1px solid #e8e2d9",
@@ -916,13 +917,16 @@ export default function ProductPage() {
                 Catalogue
               </Link>
               <span style={{ fontSize: "18px", color: "#c9a96e" }}>›</span>
-              <span>{product.name}</span>
+              <span style={{ color: "#1a1a1a", fontWeight: 500 }}>
+                {product.name}
+              </span>
             </div>
           </div>
         </section>
 
-        {/* ── PRODUCT OVERVIEW ──────────────────────────────────────── */}
+        {/* ── PRODUCT OVERVIEW ──────────────────────────────────────────── */}
         <section
+          className="page-section"
           style={{
             maxWidth: "1280px",
             margin: "0 auto",
@@ -942,7 +946,11 @@ export default function ProductPage() {
           >
             {/* LEFT – CAROUSEL */}
             <Reveal direction="left">
-              <div style={{ position: "sticky", top: "40px" }}>
+              {/* FIX: sticky class so mobile can override via media query */}
+              <div
+                className="sticky-carousel"
+                style={{ position: "sticky", top: "40px" }}
+              >
                 <ImageCarousel
                   images={images}
                   icon={product.icon as string | undefined}
@@ -953,36 +961,8 @@ export default function ProductPage() {
             {/* RIGHT – INFO */}
             <Reveal direction="right" delay={0.1}>
               <div>
-                {/* Label */}
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "40px",
-                      height: "1px",
-                      background: "#c9a96e",
-                    }}
-                  />
-                  <span
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      letterSpacing: "0.18em",
-                      textTransform: "uppercase",
-                      color: "#c9a96e",
-                    }}
-                  >
-                    Product Details
-                  </span>
-                </div>
+                <SectionLabel>Product Details</SectionLabel>
 
-                {/* Title */}
                 <h1
                   style={{
                     fontFamily: "'Playfair Display', serif",
@@ -997,35 +977,6 @@ export default function ProductPage() {
                   {product.name}
                 </h1>
 
-                {/* Animated badge strip */}
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "8px",
-                    flexWrap: "wrap",
-                    marginBottom: "28px",
-                  }}
-                >
-                  {["Pack of 10", "Unisex", "Cotton"].map((tag, i) => (
-                    <span
-                      key={tag}
-                      style={{
-                        padding: "5px 14px",
-                        borderRadius: "100px",
-                        background: i === 0 ? "#1a1a1a" : "#f0ebe3",
-                        color: i === 0 ? "#c9a96e" : "#5a5a5a",
-                        fontSize: "11px",
-                        fontWeight: 700,
-                        letterSpacing: "0.08em",
-                        textTransform: "uppercase",
-                        animation: `badgeSlide 0.5s ease ${i * 0.1 + 0.3}s both`,
-                      }}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
                 {/* Rating */}
                 <div
                   style={{
@@ -1037,7 +988,7 @@ export default function ProductPage() {
                     borderBottom: "1px solid #e8e2d9",
                   }}
                 >
-                  {renderStars(avgRating)}
+                  <StarRating rating={avgRating} />
                   <span
                     style={{
                       fontSize: "14px",
@@ -1048,7 +999,8 @@ export default function ProductPage() {
                     {avgRating.toFixed(1)} / 5
                   </span>
                   <span style={{ fontSize: "13px", color: "#7a7a7a" }}>
-                    ({product.links.length} stores)
+                    ({uniqueLinks.length} store
+                    {uniqueLinks.length !== 1 ? "s" : ""})
                   </span>
                 </div>
 
@@ -1083,7 +1035,7 @@ export default function ProductPage() {
                         transition: "all 0.4s ease",
                       }}
                     >
-                      ₹{selectedPrice ?? lowestPrice}
+                      ₹{(selectedPrice ?? lowestPrice).toLocaleString("en-IN")}
                     </div>
                     {selectedPrice && selectedPrice > lowestPrice && (
                       <div
@@ -1093,7 +1045,7 @@ export default function ProductPage() {
                           textDecoration: "line-through",
                         }}
                       >
-                        ₹{lowestPrice}
+                        ₹{lowestPrice.toLocaleString("en-IN")}
                       </div>
                     )}
                   </div>
@@ -1126,19 +1078,37 @@ export default function ProductPage() {
                   <div
                     style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}
                   >
-                    {product.sizes.map((s, i) => (
+                    {product.sizes.map((s) => (
+                      // FIX: key is s.size (unique within a product's size list); no duplicate risk here
                       <button
                         key={s.size}
                         onClick={() =>
                           setSelectedSize(s.size === selectedSize ? "" : s.size)
                         }
                         className={`size-badge${selectedSize === s.size ? " active" : ""}`}
-                        style={{ animationDelay: `${i * 0.05}s` }}
+                        aria-pressed={selectedSize === s.size}
                       >
-                        <span>{s.size}</span>
+                        {s.size}
                       </button>
                     ))}
                   </div>
+                  {selectedSize && (
+                    <button
+                      onClick={() => setSelectedSize("")}
+                      style={{
+                        marginTop: "10px",
+                        fontSize: "12px",
+                        color: "#7a7a7a",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                        padding: 0,
+                      }}
+                    >
+                      Clear selection
+                    </button>
+                  )}
                 </div>
 
                 {/* Material info */}
@@ -1202,9 +1172,10 @@ export default function ProductPage() {
           </div>
         </section>
 
-        {/* ── STORE CARDS ───────────────────────────────────────────── */}
+        {/* ── STORE CARDS ───────────────────────────────────────────────── */}
         <section
           id="stores"
+          className="page-section"
           style={{
             background: "linear-gradient(180deg, #f5f0e8 0%, #ede8de 100%)",
             padding: "100px 48px",
@@ -1214,32 +1185,25 @@ export default function ProductPage() {
           }}
         >
           {/* Decorative rings */}
-          <div
-            style={{
-              position: "absolute",
-              top: "-80px",
-              right: "-80px",
-              width: "400px",
-              height: "400px",
-              border: "1px solid rgba(201,169,110,0.15)",
-              borderRadius: "50%",
-              animation: "floatY 12s ease-in-out infinite",
-              pointerEvents: "none",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              top: "-40px",
-              right: "-40px",
-              width: "250px",
-              height: "250px",
-              border: "1px solid rgba(201,169,110,0.1)",
-              borderRadius: "50%",
-              animation: "floatY 8s ease-in-out infinite reverse",
-              pointerEvents: "none",
-            }}
-          />
+          {[
+            { size: 400, offset: -80 },
+            { size: 250, offset: -40 },
+          ].map(({ size, offset }, i) => (
+            <div
+              key={i}
+              style={{
+                position: "absolute",
+                top: `${offset}px`,
+                right: `${offset}px`,
+                width: `${size}px`,
+                height: `${size}px`,
+                border: `1px solid rgba(201,169,110,${i === 0 ? 0.15 : 0.1})`,
+                borderRadius: "50%",
+                animation: `floatY ${i === 0 ? 12 : 8}s ease-in-out infinite${i === 1 ? " reverse" : ""}`,
+                pointerEvents: "none",
+              }}
+            />
+          ))}
 
           <div
             style={{
@@ -1249,33 +1213,7 @@ export default function ProductPage() {
             }}
           >
             <Reveal direction="up">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  marginBottom: "12px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "40px",
-                    height: "1px",
-                    background: "#c9a96e",
-                  }}
-                />
-                <span
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: "#c9a96e",
-                  }}
-                >
-                  Available On
-                </span>
-              </div>
+              <SectionLabel>Available On</SectionLabel>
             </Reveal>
             <Reveal direction="up" delay={0.1}>
               <h2
@@ -1300,13 +1238,23 @@ export default function ProductPage() {
                 gap: "28px",
               }}
             >
-              {product.links.map((link, i) => {
+              {/* FIX: key uses index fallback to guarantee uniqueness even if platform names repeat */}
+              {uniqueLinks.map((link, i) => {
                 const platformColor =
                   platformColors[link.platform.toLowerCase()] || "#c9a96e";
+                const badge =
+                  link.platform.toLowerCase() === "amazon"
+                    ? "Prime"
+                    : link.platform.toLowerCase() === "flipkart"
+                      ? "Plus"
+                      : "Official";
                 return (
-                  <Reveal key={link.platform} direction="up" delay={i * 0.12}>
+                  <Reveal
+                    key={`${link.platform}-${i}`}
+                    direction="up"
+                    delay={i * 0.12}
+                  >
                     <div className="platform-card">
-                      {/* Platform header */}
                       <div
                         style={{
                           display: "flex",
@@ -1329,7 +1277,6 @@ export default function ProductPage() {
                               borderRadius: "50%",
                               background: platformColor,
                               boxShadow: `0 0 12px ${platformColor}`,
-                              transition: "all 0.3s ease",
                             }}
                           />
                           <div
@@ -1356,11 +1303,7 @@ export default function ProductPage() {
                             opacity: 0.9,
                           }}
                         >
-                          {link.platform.toLowerCase() === "amazon"
-                            ? "Prime"
-                            : link.platform.toLowerCase() === "flipkart"
-                              ? "Plus"
-                              : "Official"}
+                          {badge}
                         </div>
                       </div>
 
@@ -1385,7 +1328,7 @@ export default function ProductPage() {
                           marginBottom: "24px",
                         }}
                       >
-                        {renderStars(link.rating)}
+                        <StarRating rating={link.rating} />
                         <span
                           style={{
                             fontSize: "14px",
@@ -1414,9 +1357,10 @@ export default function ProductPage() {
           </div>
         </section>
 
-        {/* ── PRODUCT FEATURES ──────────────────────────────────────── */}
+        {/* ── PRODUCT FEATURES ──────────────────────────────────────────── */}
         {product.details && product.details.length > 0 && (
           <section
+            className="page-section"
             style={{
               maxWidth: "1280px",
               margin: "0 auto",
@@ -1426,33 +1370,7 @@ export default function ProductPage() {
             }}
           >
             <Reveal direction="up">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  marginBottom: "12px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "40px",
-                    height: "1px",
-                    background: "#c9a96e",
-                  }}
-                />
-                <span
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: "#c9a96e",
-                  }}
-                >
-                  What&apos;s Included
-                </span>
-              </div>
+              <SectionLabel>What&apos;s Included</SectionLabel>
             </Reveal>
             <Reveal direction="up" delay={0.1}>
               <h2
@@ -1477,6 +1395,7 @@ export default function ProductPage() {
               }}
             >
               {product.details.map((detail, i) => (
+                // FIX: index key is fine here — detail list is static, never reordered
                 <Reveal key={i} direction="up" delay={i * 0.07}>
                   <div
                     className="detail-item"
@@ -1499,8 +1418,6 @@ export default function ProductPage() {
                         fontWeight: 800,
                         fontSize: "14px",
                         flexShrink: 0,
-                        animation: `floatY ${6 + i}s ease-in-out infinite`,
-                        animationDelay: `${i * 0.3}s`,
                       }}
                     >
                       ✓
@@ -1522,9 +1439,10 @@ export default function ProductPage() {
           </section>
         )}
 
-        {/* ── SIZE CHART ────────────────────────────────────────────── */}
+        {/* ── SIZE CHART ────────────────────────────────────────────────── */}
         {product.sizeChart && (
           <section
+            className="page-section"
             style={{
               background: "linear-gradient(180deg,#f5f0e8,#ede8de)",
               padding: "100px 48px",
@@ -1603,14 +1521,13 @@ export default function ProductPage() {
                     gap: "20px",
                   }}
                 >
-                  <div
-                    style={{
-                      fontSize: "56px",
-                      animation: "iconBounce 3s ease-in-out infinite",
-                    }}
-                  >
-                    📏
-                  </div>
+                  <Image
+                    src={product.sizeChart}
+                    alt="Size Chart"
+                    width={400}
+                    height={400}
+                    style={{ maxWidth: "100%", height: "auto" }}
+                  />
                   <p
                     style={{
                       fontSize: "16px",
@@ -1621,7 +1538,9 @@ export default function ProductPage() {
                   >
                     Detailed size chart available on the store page. Click{" "}
                     <strong style={{ color: "#c9a96e" }}>
-                      <a href="#stores">Shop Now</a>
+                      <a href="#stores" style={{ color: "inherit" }}>
+                        Shop Now
+                      </a>
                     </strong>{" "}
                     above to see complete measurements.
                   </p>
