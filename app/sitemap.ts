@@ -1,28 +1,34 @@
-export default function sitemap() {
+import { MetadataRoute } from "next";
+
+export const dynamic = "force-static"; // ensures it's generated properly
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = "https://esteemwears.in";
+
   return [
     {
-      url: "https://esteemwears.in/",
+      url: `${baseUrl}/`,
       lastModified: new Date(),
     },
     {
-      url: "https://esteemwears.in/about",
+      url: `${baseUrl}/about`,
       lastModified: new Date(),
     },
     {
-      url: "https://esteemwears.in/catalogue",
+      url: `${baseUrl}/catalogue`,
       lastModified: new Date(),
     },
     {
-      url: "https://esteemwears.in/catalogue/boys",
+      url: `${baseUrl}/catalogue/boys`,
       lastModified: new Date(),
-    },    
+    },
     {
-      url: "https://esteemwears.in/catalogue/girls",
+      url: `${baseUrl}/catalogue/girls`,
       lastModified: new Date(),
-    },    
+    },
     {
-      url: "https://esteemwears.in/catalogue/men",
+      url: `${baseUrl}/catalogue/men`,
       lastModified: new Date(),
-    }
+    },
   ];
 }
