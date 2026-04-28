@@ -1,8 +1,9 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
+/* ── Intersection-observer hook ── */
 function useInView(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -10,43 +11,51 @@ function useInView(threshold = 0.15) {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
+      ([e]) => {
+        if (e.isIntersecting) {
           setVisible(true);
           obs.disconnect();
         }
       },
-      { threshold }, // threshold is a dependency but it's stable (default param), so it's fine
+      { threshold },
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [threshold]); // Added threshold to deps
+  }, [threshold]);
   return { ref, visible };
 }
 
+/* ── Reveal wrapper — one div, CSS transition ── */
+const TRANSFORMS: Record<string, string> = {
+  up: "translateY(56px)",
+  left: "translateX(-56px)",
+  right: "translateX(56px)",
+  fade: "none",
+};
 function Reveal({
   children,
   delay = 0,
   direction = "up",
+  className = "",
+  style = {},
 }: {
   children: React.ReactNode;
   delay?: number;
   direction?: "up" | "left" | "right" | "fade";
+  className?: string;
+  style?: React.CSSProperties;
 }) {
   const { ref, visible } = useInView();
-  const transforms: Record<string, string> = {
-    up: "translateY(56px)",
-    left: "translateX(-56px)",
-    right: "translateX(56px)",
-    fade: "translateY(0px)",
-  };
   return (
     <div
       ref={ref}
+      className={className}
       style={{
+        ...style,
         opacity: visible ? 1 : 0,
-        transform: visible ? "translate(0)" : transforms[direction],
-        transition: `opacity 0.9s ease ${delay}s, transform 0.9s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+        transform: visible ? "none" : TRANSFORMS[direction],
+        transition: `opacity .9s ease ${delay}s, transform .9s cubic-bezier(.16,1,.3,1) ${delay}s`,
+        willChange: "opacity,transform",
       }}
     >
       {children}
@@ -54,662 +63,806 @@ function Reveal({
   );
 }
 
+/* ── CountUp ── */
+function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
+  const [count, setCount] = useState(0);
+  const { ref, visible } = useInView();
+  useEffect(() => {
+    if (!visible) return;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / 1800, 1);
+      setCount(Math.floor((1 - Math.pow(1 - p, 3)) * target));
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [visible, target]);
+  return (
+    <span ref={ref}>
+      {count.toLocaleString()}
+      {suffix}
+    </span>
+  );
+}
+
+/* ── Data ── */
+const ACCENTS = [
+  "#c9a96e",
+  "#8b9e7a",
+  "#7a8b9e",
+  "#9e7a8b",
+  "#8b7a9e",
+  "#9e8b7a",
+];
+const FEATURES = [
+  {
+    title: "100% Organic Cotton",
+    desc: "Only the finest certified organic cotton — soft, breathable, and completely free from harmful chemicals.",
+  },
+  {
+    title: "Skin-Safe Dyes",
+    desc: "Certified hypoallergenic dyes gentle on all skin types, from newborns to seniors.",
+  },
+  {
+    title: "Built to Last",
+    desc: "Decades of garment expertise behind every stitch — engineered for durability without sacrificing comfort.",
+  },
+  {
+    title: "For the Whole Family",
+    desc: "Kids to adults — our full range covers every age, size, and need under one trusted brand.",
+  },
+  {
+    title: "Always Affordable",
+    desc: "Premium quality should never carry a premium price. The best value in Indian innerwear.",
+  },
+  {
+    title: "Reliable Supply",
+    desc: "Strong operational backbone ensures products are always in stock — fast dispatch, no delays.",
+  },
+];
+const STATS = [
+  { value: 100000, suffix: "+", label: "Customer Reviews" },
+  { value: 4, suffix: ".1+", label: "Avg Rating" },
+  { value: 40, suffix: "+", label: "Years Expertise" },
+  { value: 10, suffix: "+", label: "Years Online" },
+];
+const PLATFORMS = [
+  {
+    name: "Amazon",
+    badge: "Prime Seller",
+    color: "#883D11",
+    desc: "Buy any 2 products from us on Amazon, get 10% off.",
+    links: [
+      {
+        label: "Esteem Innerwear",
+        href: "https://www.amazon.in/storefront?me=A34AJOT31SQCLN",
+      },
+    ],
+  },
+  {
+    name: "Flipkart",
+    badge: "Golden Seller",
+    color: "#2874F0",
+    desc: "Flipkart Plus benefits. Fast 2-day shipping across India.",
+    links: [
+      {
+        label: "Keyar Exports",
+        href: "https://www.flipkart.com/search?q=ESTEEM%20innerwear&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off",
+      },
+    ],
+  },
+  {
+    name: "Meesho",
+    badge: "Top Seller",
+    color: "#9B30D9",
+    desc: "Available all across India.",
+    links: [
+      { label: "Keyar Exports", href: "https://www.meesho.com/KEYAREXPORTS" },
+      { label: "ARS Clothing", href: "https://www.meesho.com/ARSCLOTHING" },
+      { label: "Esteem Wears", href: "https://www.meesho.com/EsteemWears" },
+    ],
+  },
+];
+
+/* ── Global CSS — single injection ── */
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{overflow-x:hidden}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { overflow-x: hidden; }
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes marquee{to{transform:translateX(-50%)}}
+@keyframes rotateSlow{to{transform:rotate(360deg)}}
+@keyframes scrollLine{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(6px);opacity:.4}}
+@keyframes awardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 
-  @keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  @keyframes rotateSlow {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  @keyframes pulseRing {
-    0%, 100% { transform: scale(1); opacity: 0.4; }
-    50%       { transform: scale(1.08); opacity: 0.8; }
-  }
+/* Hero entrance */
+.h1{animation:fadeSlideUp 1s cubic-bezier(.16,1,.3,1) .1s both}
+.h2{animation:fadeSlideUp 1s cubic-bezier(.16,1,.3,1) .25s both}
+.h3{animation:fadeSlideUp 1s cubic-bezier(.16,1,.3,1) .4s both}
+.h4{animation:fadeSlideUp 1s cubic-bezier(.16,1,.3,1) .55s both}
+.hv{animation:fadeIn 1.4s ease .3s both}
 
-  .hero-line-1 { animation: fadeSlideUp 1s cubic-bezier(0.16,1,0.3,1) 0.1s both; }
-  .hero-line-2 { animation: fadeSlideUp 1s cubic-bezier(0.16,1,0.3,1) 0.25s both; }
-  .hero-line-3 { animation: fadeSlideUp 1s cubic-bezier(0.16,1,0.3,1) 0.4s both; }
+/* Background rings — pure CSS, no extra DOM wrappers */
+.ring1{animation:rotateSlow 40s linear infinite}
+.ring2{animation:rotateSlow 28s linear infinite reverse}
+.scroll-line{animation:scrollLine 2s ease-in-out infinite}
+.marquee-track{animation:marquee 22s linear infinite;display:flex;white-space:nowrap;will-change:transform}
+.award-img{animation:awardFloat 4s ease-in-out infinite}
 
-  .cta-primary {
-    display: inline-block;
-    background: #c9a96e;
-    color: #1a1a1a;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 16px 36px;
-    border-radius: 2px;
-    text-decoration: none;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-  }
-  .cta-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 36px rgba(201,169,110,0.35);
-    background: #d4b896;
-  }
+/* Buttons */
+.cta-primary{display:inline-block;background:#c9a96e;color:#1a1a1a;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:16px 36px;border-radius:2px;text-decoration:none;transition:transform .25s,box-shadow .25s,background .25s}
+.cta-primary:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(201,169,110,.35);background:#d4b896}
+.cta-ghost{display:inline-block;background:transparent;color:rgba(255,255,255,.75);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:15px 36px;border-radius:2px;border:1px solid rgba(255,255,255,.2);text-decoration:none;transition:border-color .25s,color .25s,transform .25s}
+.cta-ghost:hover{border-color:rgba(255,255,255,.5);color:#fff;transform:translateY(-3px)}
 
-  .timeline-item {
-    position: relative;
-    padding-left: 40px;
-  }
-  .timeline-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 2px;
-    height: 100%;
-    background: linear-gradient(to bottom, #c9a96e, transparent);
-  }
-  .timeline-item::after {
-    content: '';
-    position: absolute;
-    left: -6px;
-    top: 0;
-    width: 14px;
-    height: 14px;
-    background: #c9a96e;
-    border-radius: 50%;
-    border: 3px solid #141414;
-  }
+/* Feature card */
+.fc{background:#fafaf7;border:1px solid #e8e2d9;border-radius:4px;padding:36px 32px;transition:background .35s cubic-bezier(.16,1,.3,1),border-color .35s,transform .35s,box-shadow .35s;cursor:default;position:relative}
+.fc:hover{background:#fff;border-color:var(--ac);transform:translateY(-6px);box-shadow:0 20px 60px rgba(0,0,0,.08)}
+.fc-bar{width:32px;height:2px;background:var(--ac);margin-bottom:24px;transition:width .35s}
+.fc:hover .fc-bar{width:48px}
+.fc-title{font-size:17px;font-weight:700;color:#1a1a1a;margin-bottom:12px;font-family:'DM Sans',sans-serif;letter-spacing:-.01em}
+.fc-desc{font-size:14px;color:#7a7a7a;line-height:1.75;font-family:'DM Sans',sans-serif}
 
-  .team-card {
-    padding: 40px;
-    background: linear-gradient(145deg, rgba(255,255,255,0.05), transparent);
-    border: 1px solid rgba(201,169,110,0.15);
-    border-radius: 4px;
-    transition: all 0.3s ease;
-  }
-  .team-card:hover {
-    border-color: rgba(201,169,110,0.4);
-    transform: translateY(-6px);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-  }
+/* Stat card */
+.sc{border-left:1px solid rgba(255,255,255,.12);padding-left:36px}
+.sc-val{font-family:'Playfair Display',serif;font-size:52px;font-weight:800;color:#c9a96e;line-height:1;letter-spacing:-.02em}
+.sc-lbl{font-size:13px;color:rgba(255,255,255,.4);margin-top:10px;font-family:'DM Sans',sans-serif;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
 
-  .value-card {
-    padding: 36px;
-    background: #fafaf7;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-  }
-  .value-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 48px rgba(0,0,0,0.08);
-  }
+/* Platform card */
+.pc{padding:40px;background:#fafaf7;border:1px solid #e8e2d9;border-radius:4px}
+.pc-name{font-size:32px;font-weight:800;color:#1a1a1a;font-family:'Playfair Display',serif;margin-bottom:6px}
+.pc-badge{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px}
+.pc-desc{font-size:14px;color:#7a7a7a;line-height:1.75;margin:0 0 24px}
+.pc-link{display:inline-flex;align-items:center;gap:6px;font-size:18px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;border-bottom-width:1px;border-bottom-style:solid;padding-bottom:2px}
+.pc-note{font-size:14px;color:#7a7a7a;line-height:1.75;margin:24px 0 0}
 
-  @media (max-width: 900px) {
-    .two-col { flex-direction: column !important; }
-    .three-col { grid-template-columns: 1fr !important; }
-  }
-  @media (max-width: 600px) {
-    .hero-title { font-size: 48px !important; }
-    .section-title { font-size: 36px !important; }
-  }
+/* Labels & tags */
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#c9a96e;font-family:'DM Sans',sans-serif}
+.tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8a7a6a;background:#f0ece4;border:1px solid #e0d8cc;border-radius:2px;padding:8px 16px;font-family:'DM Sans',sans-serif}
+
+/* Grid line decoration — single pseudo on parent, no extra DOM nodes */
+.grid-lines{position:absolute;inset:0;pointer-events:none;
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.02) 0,rgba(255,255,255,.02) 1px,transparent 1px,transparent 20%);
+  background-size:20% 100%}
+
+/* Responsive */
+@media(max-width:900px){
+  .hero-grid{flex-direction:column!important}
+  .features-grid{grid-template-columns:1fr 1fr!important}
+  .stats-row{flex-direction:column!important;gap:32px!important}
+  .story-grid{flex-direction:column!important}
+  .trust-inner{flex-direction:column!important;align-items:center!important;text-align:center}
+  .three-col{grid-template-columns:1fr 1fr!important}
+}
+@media(max-width:600px){
+  .features-grid{grid-template-columns:1fr!important}
+  .three-col{grid-template-columns:1fr!important}
+  .hero-title{font-size:48px!important}
+}
 `;
 
-export default function About() {
+export default function HomePage() {
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: css }} />
-
       <div
         style={{
-          width: "100%",
-          minHeight: "100vh",
-          overflowX: "hidden",
+          fontFamily: "'DM Sans',sans-serif",
           background: "#fafaf7",
           color: "#1a1a1a",
-          fontFamily: "'DM Sans', sans-serif",
         }}
       >
-        {/* ── HERO ──────────────────────────────────────────────────────── */}
+        {/* ── HERO ── */}
         <section
           style={{
             minHeight: "100vh",
             background:
-              "linear-gradient(150deg, #141414 0%, #1e1a16 60%, #241e18 100%)",
+              "linear-gradient(150deg,#141414 0%,#1e1a16 60%,#241e18 100%)",
+            position: "relative",
+            overflow: "hidden",
             display: "flex",
             alignItems: "center",
+            paddingTop: "88px",
+          }}
+        >
+          {/* BG rings — 2 divs instead of 7+ */}
+          <div className="grid-lines" />
+          <div
+            className="ring1"
+            style={{
+              position: "absolute",
+              top: "-15%",
+              right: "-8%",
+              width: "680px",
+              height: "680px",
+              border: "1px solid rgba(201,169,110,.08)",
+              borderRadius: "50%",
+              pointerEvents: "none",
+            }}
+          />
+          <div
+            className="ring2"
+            style={{
+              position: "absolute",
+              top: "-5%",
+              right: "2%",
+              width: "480px",
+              height: "480px",
+              border: "1px solid rgba(201,169,110,.05)",
+              borderRadius: "50%",
+              pointerEvents: "none",
+            }}
+          />
+          {/* radial glow via box-shadow on ring1, no extra div needed */}
+
+          <div
+            className="hero-grid"
+            style={{
+              maxWidth: "1280px",
+              margin: "0 auto",
+              padding: "80px 48px",
+              display: "flex",
+              alignItems: "center",
+              gap: "80px",
+              width: "100%",
+              position: "relative",
+            }}
+          >
+            {/* LEFT */}
+            <div style={{ flex: 1 }}>
+              <div className="h1" style={{ marginBottom: "32px" }}>
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    marginBottom: "32px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "1px",
+                      background: "#c9a96e",
+                    }}
+                  />
+                  <span className="eyebrow">
+                    Est. Tiruppur · Since 30+ Years
+                  </span>
+                </div>
+              </div>
+              <h1
+                className="hero-title h2"
+                style={{
+                  fontFamily: "'Playfair Display',serif",
+                  fontSize: "76px",
+                  fontWeight: 800,
+                  color: "#fff",
+                  lineHeight: 1.02,
+                  letterSpacing: "-.025em",
+                  marginBottom: "32px",
+                }}
+              >
+                Comfort
+                <br />
+                <em style={{ fontStyle: "italic", color: "#c9a96e" }}>
+                  Knitted
+                </em>
+                <br />
+                into Every
+                <br />
+                Thread.
+              </h1>
+              <p
+                className="h3"
+                style={{
+                  fontSize: "16px",
+                  color: "rgba(255,255,255,.5)",
+                  lineHeight: 1.85,
+                  maxWidth: "420px",
+                  marginBottom: "44px",
+                  fontFamily: "'DM Sans',sans-serif",
+                }}
+              >
+                100% organic cotton innerwear for every member of your family —
+                crafted with four decades of expertise and skin-safe dyes.
+                Trusted by over one lakh families across India.
+              </p>
+            </div>
+
+            {/* RIGHT */}
+            <div
+              className="hero-visual hv"
+              style={{
+                flex: "1 1 420px",
+                maxWidth: "420px",
+                position: "relative",
+              }}
+            >
+              <div
+                className="h4"
+                style={{
+                  display: "flex",
+                  gap: "16px",
+                  flexWrap: "wrap",
+                  marginBottom: "36px",
+                }}
+              >
+                <Link href="/catalogue" className="cta-primary">
+                  Shop Collection
+                </Link>
+                <Link href="#story" className="cta-ghost">
+                  Our Story
+                </Link>
+              </div>
+              <div
+                className="h4"
+                style={{
+                  display: "flex",
+                  gap: 0,
+                  paddingTop: "36px",
+                  borderTop: "1px solid rgba(255,255,255,.07)",
+                  flexWrap: "wrap",
+                }}
+              >
+                {[
+                  { n: "40+", l: "Years Expertise" },
+                  { n: "1L+", l: "Reviews" },
+                  { n: "4.1★", l: "Avg Rating" },
+                ].map((s, i) => (
+                  <div
+                    key={s.l}
+                    style={{
+                      paddingRight: "40px",
+                      marginRight: "40px",
+                      borderRight:
+                        i < 2 ? "1px solid rgba(255,255,255,.08)" : "none",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontFamily: "'Playfair Display',serif",
+                        fontSize: "32px",
+                        fontWeight: 800,
+                        color: "#c9a96e",
+                        lineHeight: 1,
+                      }}
+                    >
+                      {s.n}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        color: "rgba(255,255,255,.35)",
+                        marginTop: "6px",
+                        fontWeight: 500,
+                        letterSpacing: ".06em",
+                        textTransform: "uppercase",
+                        fontFamily: "'DM Sans',sans-serif",
+                      }}
+                    >
+                      {s.l}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Scroll cue */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "36px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "10px",
+              animation: "fadeIn 1s ease 1.4s both",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "10px",
+                letterSpacing: ".2em",
+                textTransform: "uppercase",
+                color: "rgba(255,255,255,.25)",
+                fontFamily: "'DM Sans',sans-serif",
+              }}
+            >
+              Scroll
+            </span>
+            <div
+              className="scroll-line"
+              style={{
+                width: "1px",
+                height: "56px",
+                background:
+                  "linear-gradient(to bottom,rgba(201,169,110,.6),transparent)",
+              }}
+            />
+          </div>
+        </section>
+
+        {/* ── MARQUEE — single CSS animation, items duplicated via CSS not JS ── */}
+        <div
+          style={{
+            background: "#c9a96e",
+            padding: "16px 0",
+            overflow: "hidden",
+          }}
+        >
+          <div className="marquee-track">
+            {/* Two copies is enough for seamless loop */}
+            {[0, 1].map((copy) => (
+              <span key={copy} style={{ display: "contents" }}>
+                {[
+                  "100% Organic Cotton",
+                  "Skin-Safe Dyes",
+                  "Family Innerwear",
+                  "30+ Years Craftsmanship",
+                  "1 Lakh+ Reviews",
+                  "Amazon Prime Seller",
+                  "Flipkart Golden Seller",
+                  "Meesho Top Seller",
+                ].map((item, i) => (
+                  <span
+                    key={`${copy}-${i}`}
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      color: "#1a1a1a",
+                      letterSpacing: ".14em",
+                      textTransform: "uppercase",
+                      marginRight: "56px",
+                      fontFamily: "'DM Sans',sans-serif",
+                    }}
+                  >
+                    {item}
+                    <span style={{ marginLeft: "56px", opacity: 0.4 }}>—</span>
+                  </span>
+                ))}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* ── STORY ── */}
+        <section
+          id="story"
+          style={{
+            maxWidth: "1280px",
+            margin: "0 auto",
+            padding: "140px 48px",
+          }}
+        >
+          <div
+            className="story-grid"
+            style={{ display: "flex", gap: "100px", alignItems: "center" }}
+          >
+            <Reveal direction="left" style={{ flex: "0 0 400px" }}>
+              <div
+                style={{
+                  background: "#1a1a1a",
+                  borderRadius: "4px",
+                  padding: "60px 52px",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                {/* Corner accents via pseudo-elements in CSS would be cleaner but inline is fine for 2 divs */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    width: "100px",
+                    height: "100px",
+                    borderBottom: "1px solid rgba(201,169,110,.15)",
+                    borderLeft: "1px solid rgba(201,169,110,.15)",
+                  }}
+                />
+                <span
+                  className="eyebrow"
+                  style={{ display: "block", marginBottom: "20px" }}
+                >
+                  Founder
+                </span>
+                <div
+                  style={{
+                    fontFamily: "'Playfair Display',serif",
+                    fontSize: "64px",
+                    fontWeight: 800,
+                    color: "#c9a96e",
+                    lineHeight: 1,
+                    marginBottom: "4px",
+                  }}
+                >
+                  40+
+                </div>
+                <div
+                  style={{
+                    fontSize: "14px",
+                    color: "rgba(255,255,255,.4)",
+                    fontFamily: "'DM Sans',sans-serif",
+                    marginBottom: "48px",
+                  }}
+                >
+                  Years of mastery
+                </div>
+                <div
+                  style={{
+                    paddingTop: "32px",
+                    borderTop: "1px solid rgba(255,255,255,.08)",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "16px",
+                      fontWeight: 700,
+                      color: "#fff",
+                      fontFamily: "'DM Sans',sans-serif",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    Krishnaswamy P
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "12px",
+                      color: "rgba(255,255,255,.35)",
+                      fontFamily: "'DM Sans',sans-serif",
+                      letterSpacing: ".06em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    Founder &amp; Director
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+
+            <div style={{ flex: 1 }}>
+              <Reveal direction="right" delay={0.1}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "1px",
+                      background: "#c9a96e",
+                    }}
+                  />
+                  <span className="eyebrow">Our Legacy</span>
+                </div>
+              </Reveal>
+              <Reveal direction="right" delay={0.2}>
+                <h2
+                  style={{
+                    fontFamily: "'Playfair Display',serif",
+                    fontSize: "54px",
+                    fontWeight: 800,
+                    lineHeight: 1.08,
+                    color: "#1a1a1a",
+                    letterSpacing: "-.02em",
+                    marginBottom: "32px",
+                  }}
+                >
+                  Three Decades
+                  <br />
+                  <em
+                    style={{
+                      fontStyle: "italic",
+                      color: "#6b6b6b",
+                      fontWeight: 700,
+                    }}
+                  >
+                    of Trust
+                  </em>
+                </h2>
+              </Reveal>
+              <Reveal direction="right" delay={0.3}>
+                <p
+                  style={{
+                    fontSize: "16px",
+                    color: "#6b6b6b",
+                    lineHeight: 1.85,
+                    marginBottom: "20px",
+                    maxWidth: "520px",
+                    fontFamily: "'DM Sans',sans-serif",
+                  }}
+                >
+                  Esteem Innerwear was born in Tiruppur — India&apos;s textile
+                  capital — with a simple mission: bring comfort that every
+                  family deserves. Our founder Krishnaswamy P spent over four
+                  decades mastering the art of garment manufacturing before
+                  channeling that expertise into Esteem.
+                </p>
+              </Reveal>
+              <Reveal direction="right" delay={0.4}>
+                <p
+                  style={{
+                    fontSize: "16px",
+                    color: "#6b6b6b",
+                    lineHeight: 1.85,
+                    marginBottom: "44px",
+                    maxWidth: "520px",
+                    fontFamily: "'DM Sans',sans-serif",
+                  }}
+                >
+                  From traditional craftsmanship to modern e-commerce, we
+                  combine both worlds — serving customers on Amazon, Flipkart,
+                  and Meesho for over a decade with an unbroken commitment to
+                  quality, comfort, and affordability.
+                </p>
+              </Reveal>
+              <Reveal direction="right" delay={0.5}>
+                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                  {[
+                    "Tiruppur-Based",
+                    "Family Values",
+                    "Organic Materials",
+                    "10+ Years Online",
+                  ].map((tag) => (
+                    <span key={tag} className="tag">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
+        {/* ── STATS ── */}
+        <section
+          style={{
+            background: "#141414",
             padding: "120px 48px",
             position: "relative",
             overflow: "hidden",
           }}
         >
-          {/* Geometry */}
+          <div className="grid-lines" />
           <div
-            style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: "-15%",
-                right: "-8%",
-                width: "680px",
-                height: "680px",
-                border: "1px solid rgba(201,169,110,0.08)",
-                borderRadius: "50%",
-                animation: "rotateSlow 40s linear infinite",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                top: "20%",
-                right: "10%",
-                width: "500px",
-                height: "500px",
-                background:
-                  "radial-gradient(circle, rgba(201,169,110,0.07) 0%, transparent 70%)",
-                borderRadius: "50%",
-              }}
-            />
-          </div>
-
-          <div
+            className="trust-inner"
             style={{
               maxWidth: "1280px",
               margin: "0 auto",
+              display: "flex",
+              alignItems: "center",
+              gap: "64px",
               position: "relative",
-              width: "100%",
             }}
           >
-            <Reveal>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  marginBottom: "32px",
-                }}
-              >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <Reveal direction="up">
                 <div
                   style={{
-                    width: "40px",
-                    height: "1px",
-                    background: "#c9a96e",
-                  }}
-                />
-                <span
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: "#c9a96e",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                    marginBottom: "16px",
                   }}
                 >
-                  Our Journey
-                </span>
-              </div>
-            </Reveal>
-
-            <div className="hero-line-2">
-              <h1
-                className="hero-title"
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "76px",
-                  fontWeight: 800,
-                  color: "#fff",
-                  lineHeight: 1.02,
-                  letterSpacing: "-0.025em",
-                  marginBottom: "32px",
-                }}
-              >
-                Built on Legacy.
-                <br />
-                <em style={{ fontStyle: "italic", color: "#c9a96e" }}>
-                  Driven
-                </em>{" "}
-                by Trust.
-              </h1>
-            </div>
-
-            <div className="hero-line-3">
-              <p
-                style={{
-                  fontSize: "16px",
-                  color: "rgba(255,255,255,0.5)",
-                  lineHeight: 1.85,
-                  maxWidth: "540px",
-                  fontWeight: 400,
-                }}
-              >
-                From Tiruppur’s textile heartland to homes across India, Esteem
-                Innerwear has spent over three decades redefining everyday
-                comfort with organic cotton, precision craftsmanship, and
-                unwavering consistency.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ── FOUNDING STORY ────────────────────────────────────────────── */}
-        <section
-          style={{
-            maxWidth: "1280px",
-            margin: "0 auto",
-            padding: "140px 48px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              gap: "100px",
-              alignItems: "flex-start",
-              flexWrap: "wrap",
-              marginBottom: "80px",
-            }}
-          >
-            {/* Timeline */}
-            <div style={{ flex: "0 0 220px" }}>
-              <Reveal direction="left">
-                <div style={{ paddingTop: "20px" }}>
-                  {[
-                    {
-                      year: "1993",
-                      event: "Krishnaswamy P founds textile mill in Tiruppur",
-                    },
-                    {
-                      year: "2005",
-                      event: "Transition to innerwear specialization",
-                    },
-                    {
-                      year: "2013",
-                      event:
-                        "Launch on Amazon, Flipkart and Meesho as online retailer",
-                    },
-                    {
-                      year: "2024",
-                      event: "1 Lakh+ customer reviews milestone",
-                    },
-                    {
-                      year: "2026",
-                      event: "10 Lakh+ happy customers and is still improving",
-                    },
-                  ].map((item, i) => (
-                    <div
-                      key={item.year}
-                      className="timeline-item"
-                      style={{ marginBottom: i < 4 ? "60px" : 0 }}
-                    >
-                      <div
-                        style={{
-                          fontSize: "13px",
-                          fontWeight: 700,
-                          letterSpacing: "0.1em",
-                          color: "#c9a96e",
-                          textTransform: "uppercase",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        {item.year}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: "15px",
-                          color: "#5a5a5a",
-                          lineHeight: 1.6,
-                          fontWeight: 500,
-                        }}
-                      >
-                        {item.event}
-                      </div>
-                    </div>
-                  ))}
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "1px",
+                      background: "#c9a96e",
+                    }}
+                  />
+                  <span className="eyebrow">By the Numbers</span>
                 </div>
               </Reveal>
-            </div>
-
-            {/* Text */}
-            <div style={{ flex: 1, minWidth: "280px" }}>
-              <Reveal direction="right" delay={0.1}>
+              <Reveal direction="up" delay={0.1}>
                 <h2
                   style={{
-                    fontFamily: "'Playfair Display', serif",
+                    fontFamily: "'Playfair Display',serif",
                     fontSize: "52px",
                     fontWeight: 800,
-                    color: "#1a1a1a",
-                    letterSpacing: "-0.02em",
-                    marginBottom: "28px",
-                    lineHeight: 1.08,
+                    color: "#fff",
+                    letterSpacing: "-.02em",
+                    marginBottom: "72px",
                   }}
                 >
-                  The Esteem
-                  <br />
-                  <em
-                    style={{
-                      fontStyle: "italic",
-                      color: "#8a7a6a",
-                      fontWeight: 700,
-                    }}
-                  >
-                    Story
-                  </em>
+                  Trust, Measured.
                 </h2>
               </Reveal>
-
-              <Reveal direction="right" delay={0.2}>
-                <p
-                  style={{
-                    fontSize: "15px",
-                    color: "#6b6b6b",
-                    lineHeight: 1.85,
-                    marginBottom: "20px",
-                  }}
-                >
-                  Krishnaswamy P , with over 40 years of garment manufacturing
-                  expertise, established Esteem with a singular vision: deliver
-                  comfort that every Indian family deserves, without compromise
-                  on quality or affordability.
-                </p>
-              </Reveal>
-
-              <Reveal direction="right" delay={0.3}>
-                <p
-                  style={{
-                    fontSize: "15px",
-                    color: "#6b6b6b",
-                    lineHeight: 1.85,
-                    marginBottom: "20px",
-                  }}
-                >
-                  Starting from Tiruppur - India’s textile capital - Esteem grew
-                  organically by mastering the craft of innerwear. The brand
-                  focused obsessively on three pillars: 100% organic cotton,
-                  skin-safe dyes, and consistent sizing.
-                </p>
-              </Reveal>
-
-              <Reveal direction="right" delay={0.4}>
-                <p
-                  style={{
-                    fontSize: "15px",
-                    color: "#6b6b6b",
-                    lineHeight: 1.85,
-                  }}
-                >
-                  When e-commerce arrived, Esteem was ready. Within a decade
-                  online, the brand achieved Prime Seller status on Amazon,
-                  Golden Seller on Flipkart, and Top Seller on Meesho - each
-                  badge earned through thousands of customer reviews and a
-                  consistent 4.1+ rating.
-                </p>
-              </Reveal>
+              <div className="stats-row" style={{ display: "flex" }}>
+                {STATS.map((s, i) => (
+                  <Reveal
+                    key={s.label}
+                    direction="up"
+                    delay={0.1 + i * 0.05}
+                    className="sc"
+                  >
+                    <div className="sc-val">
+                      <CountUp target={s.value} suffix={s.suffix} />
+                    </div>
+                    <div className="sc-lbl">{s.label}</div>
+                  </Reveal>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
 
-        {/* ── THE FOUNDER ───────────────────────────────────────────────── */}
-        <section
-          style={{
-            background: "#f5f0e8",
-            padding: "100px 48px",
-          }}
-        >
-          <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-            <Reveal direction="up">
+            <Reveal direction="up" delay={0.2}>
               <div
                 style={{
+                  flexShrink: 0,
+                  width: "260px",
                   display: "flex",
+                  flexDirection: "column",
                   alignItems: "center",
-                  gap: "12px",
-                  marginBottom: "24px",
+                  gap: "20px",
                 }}
               >
                 <div
                   style={{
-                    width: "40px",
-                    height: "1px",
-                    background: "#c9a96e",
-                  }}
-                />
-                <span
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: "#c9a96e",
-                  }}
-                >
-                  Leadership
-                </span>
-              </div>
-            </Reveal>
-            <Reveal direction="up" delay={0.1}>
-              <h2
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "52px",
-                  fontWeight: 800,
-                  color: "#1a1a1a",
-                  letterSpacing: "-0.02em",
-                  marginBottom: "56px",
-                }}
-              >
-                Krishnaswamy P
-              </h2>
-            </Reveal>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "60px",
-                alignItems: "start",
-              }}
-            >
-              <Reveal direction="left" delay={0.2}>
-                <div
-                  style={{
-                    background: "#1a1a1a",
-                    borderRadius: "4px",
-                    padding: "48px 40px",
                     position: "relative",
-                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
-                  {/* Corner accent */}
                   <div
                     style={{
                       position: "absolute",
-                      top: 0,
-                      right: 0,
-                      width: "80px",
-                      height: "80px",
-                      borderBottom: "1px solid rgba(201,169,110,0.2)",
-                      borderLeft: "1px solid rgba(201,169,110,0.2)",
+                      width: "220px",
+                      height: "220px",
+                      borderRadius: "50%",
+                      background:
+                        "radial-gradient(circle,rgba(201,169,110,.18) 0%,transparent 70%)",
                     }}
                   />
-
+                  <Image
+                    src="https://res.cloudinary.com/desmywzoz/image/upload/v1777385399/gold_seller_shbjad.png"
+                    alt="Gold Seller Award"
+                    width={180}
+                    height={180}
+                    className="award-img"
+                    style={{
+                      width: "350px",
+                      height: "auto",
+                      objectFit: "contain",
+                      position: "relative",
+                      zIndex: 1,
+                      filter: "drop-shadow(0 8px 32px rgba(201,169,110,.35))",
+                    }}
+                  />
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div className="eyebrow" style={{ marginBottom: "6px" }}>
+                    Gold Seller Excellence
+                  </div>
                   <div
                     style={{
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      letterSpacing: "0.18em",
-                      textTransform: "uppercase",
-                      color: "#c9a96e",
-                      marginBottom: "24px",
-                    }}
-                  >
-                    Founder & Director
-                  </div>
-
-                  <div
-                    style={{
-                      fontFamily: "'Playfair Display', serif",
-                      fontSize: "56px",
-                      fontWeight: 800,
-                      color: "#c9a96e",
-                      lineHeight: 1,
-                      marginBottom: "8px",
-                    }}
-                  >
-                    40+
-                  </div>
-                  <p
-                    style={{
-                      color: "rgba(255,255,255,0.4)",
                       fontSize: "13px",
-                      marginBottom: "40px",
+                      color: "rgba(255,255,255,.4)",
+                      fontFamily: "'DM Sans',sans-serif",
+                      lineHeight: 1.6,
                     }}
                   >
-                    Years in garment manufacturing
-                  </p>
-
-                  <div
-                    style={{
-                      paddingTop: "32px",
-                      borderTop: "1px solid rgba(255,255,255,0.08)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: 700,
-                        color: "#fff",
-                        marginBottom: "4px",
-                      }}
-                    >
-                      M. Krishnaswamy P
-                    </div>
-                    <p
-                      style={{
-                        fontSize: "11px",
-                        color: "rgba(255,255,255,0.35)",
-                        letterSpacing: "0.06em",
-                        textTransform: "uppercase",
-                        margin: 0,
-                      }}
-                    >
-                      Founder
-                    </p>
-                  </div>
-
-                  <div
-                    style={{
-                      marginTop: "32px",
-                      paddingTop: "32px",
-                      borderTop: "1px solid rgba(255,255,255,0.08)",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: "12px",
-                        color: "rgba(255,255,255,0.5)",
-                        lineHeight: 1.7,
-                        fontStyle: "italic",
-                        margin: 0,
-                      }}
-                    >
-                      &ldquo;Quality is never an accident. It’s a discipline, a
-                      choice, and a responsibility we make every single
-                      day.&rdquo;
-                    </p>
+                    Top Seller on Flipkart.
                   </div>
                 </div>
-              </Reveal>
-
-              <Reveal direction="right" delay={0.3}>
-                <div>
-                  <h3
-                    style={{
-                      fontSize: "24px",
-                      fontWeight: 700,
-                      color: "#1a1a1a",
-                      marginBottom: "20px",
-                      fontFamily: "'Playfair Display', serif",
-                    }}
-                  >
-                    A Craftsman’s Philosophy
-                  </h3>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "20px",
-                    }}
-                  >
-                    <p
-                      style={{
-                        fontSize: "15px",
-                        color: "#6b6b6b",
-                        lineHeight: 1.85,
-                        margin: 0,
-                      }}
-                    >
-                      Krishnaswamy P’s journey in textiles began in the early
-                      1980s, when Tiruppur was transforming into a global
-                      manufacturing hub. While others chased volume, he pursued
-                      mastery.
-                    </p>
-
-                    <p
-                      style={{
-                        fontSize: "15px",
-                        color: "#6b6b6b",
-                        lineHeight: 1.85,
-                        margin: 0,
-                      }}
-                    >
-                      For two decades, he built reputation through institutional
-                      clients and private labels. But a question lingered: what
-                      if he could serve families directly, with the same rigor
-                      he’d applied to bulk orders?
-                    </p>
-
-                    <p
-                      style={{
-                        fontSize: "15px",
-                        color: "#6b6b6b",
-                        lineHeight: 1.85,
-                        margin: 0,
-                      }}
-                    >
-                      Esteem was born from that conviction. Not as a quick play
-                      at scale, but as a deliberate commitment to one promise:
-                      comfort that lasts, quality you trust, at a price that
-                      makes sense.
-                    </p>
-
-                    <p
-                      style={{
-                        fontSize: "15px",
-                        color: "#6b6b6b",
-                        lineHeight: 1.85,
-                        margin: 0,
-                      }}
-                    >
-                      Today, with his daughter and a dedicated team,
-                      Krishnaswamy oversees every aspect of the operation - from
-                      cotton sourcing to final dispatch. That hands-on
-                      philosophy, unchanged for decades, is why every piece
-                      bears his stamp of care.
-                    </p>
-                  </div>
-                </div>
-              </Reveal>
-            </div>
+              </div>
+            </Reveal>
           </div>
         </section>
 
-        {/* ── CORE VALUES ───────────────────────────────────────────────── */}
+        {/* ── FEATURES ── */}
         <section
           style={{
             maxWidth: "1280px",
@@ -717,120 +870,74 @@ export default function About() {
             padding: "140px 48px",
           }}
         >
-          <Reveal direction="up">
+          <Reveal direction="up" style={{ marginBottom: "80px" }}>
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "12px",
-                marginBottom: "24px",
+                gap: "16px",
+                marginBottom: "20px",
               }}
             >
               <div
                 style={{ width: "40px", height: "1px", background: "#c9a96e" }}
               />
-              <span
-                style={{
-                  fontSize: "11px",
-                  fontWeight: 700,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  color: "#c9a96e",
-                }}
-              >
-                Philosophy
-              </span>
+              <span className="eyebrow">Why Esteem</span>
             </div>
-          </Reveal>
-          <Reveal direction="up" delay={0.1}>
             <h2
               style={{
-                fontFamily: "'Playfair Display', serif",
+                fontFamily: "'Playfair Display',serif",
                 fontSize: "52px",
                 fontWeight: 800,
+                lineHeight: 1.1,
                 color: "#1a1a1a",
-                letterSpacing: "-0.02em",
-                marginBottom: "72px",
+                letterSpacing: "-.02em",
+                maxWidth: "480px",
               }}
             >
-              Simplicity. Quality. Consistency.
+              Crafted for Every Family.
             </h2>
           </Reveal>
-
           <div
-            className="three-col"
+            className="features-grid"
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "24px",
+              gridTemplateColumns: "repeat(3,1fr)",
+              gap: "20px",
             }}
           >
-            {[
-              {
-                title: "100% Organic Cotton",
-                desc: "We don’t compromise on material. Every thread is certified organic, breathable, and designed for year-round comfort across India’s diverse climate.",
-              },
-              {
-                title: "Precision Craftsmanship",
-                desc: "Decades of expertise distilled into every stitch. Our quality control process ensures zero tolerance for defects.",
-              },
-              {
-                title: "Family-First Design",
-                desc: "Innerwear for ages 4 to 80. Every size, every fit, every fabric choice is informed by real family feedback.",
-              },
-              {
-                title: "Consistent Supply",
-                desc: "Strong operational backbone ensures regular stock, fast fulfillment, and no backorders. Reliability is our promise.",
-              },
-              {
-                title: "Affordable Pricing",
-                desc: "Premium quality shouldn’t require a premium budget. We maintain thin margins to make comfort accessible to every household.",
-              },
-            ].map((val, i) => (
-              <Reveal key={val.title} direction="up" delay={i * 0.08}>
-                <div className="value-card">
-                  <h3
-                    style={{
-                      fontSize: "18px",
-                      fontWeight: 700,
-                      color: "#1a1a1a",
-                      marginBottom: "12px",
-                      fontFamily: "'DM Sans', sans-serif",
-                    }}
-                  >
-                    {val.title}
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: "14px",
-                      color: "#7a7a7a",
-                      lineHeight: 1.75,
-                      margin: 0,
-                    }}
-                  >
-                    {val.desc}
-                  </p>
+            {FEATURES.map((f, i) => (
+              <Reveal key={f.title} direction="up" delay={i * 0.08}>
+                <div
+                  className="fc"
+                  style={
+                    {
+                      "--ac": ACCENTS[i % ACCENTS.length],
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="fc-bar" />
+                  <h3 className="fc-title">{f.title}</h3>
+                  <p className="fc-desc">{f.desc}</p>
                 </div>
               </Reveal>
             ))}
           </div>
         </section>
 
-        {/* ── OPERATIONS ────────────────────────────────────────────────── */}
-        <section
-          style={{
-            background: "#f5f0e8",
-            padding: "100px 48px",
-          }}
-        >
+        {/* ── PLATFORMS ── */}
+        <section style={{ background: "#f5f0e8", padding: "120px 48px" }}>
           <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-            <Reveal direction="up">
+            <Reveal
+              direction="up"
+              style={{ textAlign: "center", marginBottom: "80px" }}
+            >
               <div
                 style={{
-                  display: "flex",
+                  display: "inline-flex",
                   alignItems: "center",
                   gap: "12px",
-                  marginBottom: "24px",
+                  marginBottom: "20px",
                 }}
               >
                 <div
@@ -840,476 +947,242 @@ export default function About() {
                     background: "#c9a96e",
                   }}
                 />
-                <span
+                <span className="eyebrow">Platform Recognition</span>
+                <div
                   style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: "#c9a96e",
+                    width: "40px",
+                    height: "1px",
+                    background: "#c9a96e",
                   }}
-                >
-                  How We Work
-                </span>
+                />
               </div>
-            </Reveal>
-            <Reveal direction="up" delay={0.1}>
               <h2
                 style={{
-                  fontFamily: "'Playfair Display', serif",
+                  fontFamily: "'Playfair Display',serif",
                   fontSize: "52px",
                   fontWeight: 800,
                   color: "#1a1a1a",
-                  letterSpacing: "-0.02em",
-                  marginBottom: "56px",
+                  letterSpacing: "-.02em",
+                  marginBottom: "16px",
                 }}
               >
-                From Cotton to Your Door
+                Trusted Nationwide.
               </h2>
+              <p
+                style={{
+                  fontSize: "16px",
+                  color: "#7a7a7a",
+                  maxWidth: "480px",
+                  margin: "0 auto",
+                  lineHeight: 1.8,
+                  fontFamily: "'DM Sans',sans-serif",
+                }}
+              >
+                Over 1 lakh reviews and a 4.1+ rating across platforms — earned
+                through decades of delivering on our promise.
+              </p>
             </Reveal>
 
             <div
               className="three-col"
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
+                gridTemplateColumns: "repeat(3,1fr)",
                 gap: "24px",
               }}
             >
-              {[
-                {
-                  step: "01",
-                  title: "Sourcing",
-                  desc: "We partner with certified organic cotton farms across India, ensuring traceability from seed to fabric.",
-                },
-                {
-                  step: "02",
-                  title: "Dyeing & Finishing",
-                  desc: "Our in-house facility applies skin-safe dyes using proprietary processes. Every batch is tested for color fastness and safety.",
-                },
-                {
-                  step: "03",
-                  title: "Cutting & Sewing",
-                  desc: "Precision patterns ensure consistent fit across all sizes. Master tailors oversee quality at every station.",
-                },
-                {
-                  step: "04",
-                  title: "Quality Check",
-                  desc: "Three-stage inspection: fabric, construction, and final. Less than 0.5% defect rate across all products.",
-                },
-                {
-                  step: "05",
-                  title: "Packaging",
-                  desc: "Eco-friendly packaging materials that protect the product while minimizing environmental impact.",
-                },
-                {
-                  step: "06",
-                  title: "Fulfillment",
-                  desc: "Partnership with Amazon, Flipkart, and Meesho ensures fast, reliable delivery to your doorstep.",
-                },
-              ].map((item, i) => (
-                <Reveal key={item.step} direction="up" delay={i * 0.08}>
-                  <div className="value-card">
+              {PLATFORMS.map((p, i) => (
+                <Reveal key={p.name} direction="up" delay={i * 0.12}>
+                  <div className="pc">
                     <div
                       style={{
-                        fontSize: "32px",
-                        fontWeight: 800,
-                        color: "#c9a96e",
-                        fontFamily: "'Playfair Display', serif",
-                        marginBottom: "12px",
+                        width: "48px",
+                        height: "2px",
+                        background: p.color,
+                        marginBottom: "16px",
                       }}
-                    >
-                      {item.step}
+                    />
+                    <div className="pc-name">{p.name}</div>
+                    <div className="pc-badge" style={{ color: p.color }}>
+                      {p.badge}
                     </div>
-                    <h3
+                    <p className="pc-desc">{p.desc}</p>
+                    <div
                       style={{
-                        fontSize: "18px",
-                        fontWeight: 700,
-                        color: "#1a1a1a",
-                        marginBottom: "8px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "10px",
                       }}
                     >
-                      {item.title}
-                    </h3>
-                    <p
-                      style={{
-                        fontSize: "14px",
-                        color: "#7a7a7a",
-                        lineHeight: 1.75,
-                        margin: 0,
-                      }}
-                    >
-                      {item.desc}
+                      {p.links.map((link) => (
+                        <Link
+                          key={link.label}
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="pc-link"
+                          style={{ color: p.color, borderColor: p.color }}
+                        >
+                          {link.label}{" "}
+                          <span style={{ fontSize: "14px" }}>→</span>
+                        </Link>
+                      ))}
+                    </div>
+                    <p className="pc-note">
+                      View on the above platform to shop our full collection and
+                      read reviews from verified customers.
                     </p>
                   </div>
                 </Reveal>
               ))}
             </div>
-          </div>
-        </section>
 
-        {/* ── PLATFORMS ────────────────────────────────────────────────── */}
-        <section
-          style={{
-            maxWidth: "1280px",
-            margin: "0 auto",
-            padding: "140px 48px",
-          }}
-        >
-          <Reveal direction="up">
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "12px",
-                marginBottom: "24px",
-              }}
+            {/* Rating */}
+            <Reveal
+              direction="up"
+              delay={0.2}
+              style={{ textAlign: "center", marginTop: "80px" }}
             >
+              {/* Stars as CSS — no clipPath divs */}
               <div
-                style={{ width: "40px", height: "1px", background: "#c9a96e" }}
-              />
-              <span
                 style={{
-                  fontSize: "11px",
-                  fontWeight: 700,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
+                  fontSize: "32px",
+                  letterSpacing: "4px",
                   color: "#c9a96e",
+                  marginBottom: "16px",
                 }}
               >
-                Where to Shop
-              </span>
+                ★★★★<span style={{ opacity: 0.15 }}>★</span>
+              </div>
               <div
-                style={{ width: "40px", height: "1px", background: "#c9a96e" }}
-              />
-            </div>
-          </Reveal>
-          <Reveal direction="up" delay={0.1}>
-            <h2
-              style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: "52px",
-                fontWeight: 800,
-                color: "#1a1a1a",
-                letterSpacing: "-0.02em",
-                textAlign: "center",
-                marginBottom: "24px",
-              }}
-            >
-              Available on All Major Platforms
-            </h2>
-          </Reveal>
-          <Reveal direction="up" delay={0.2}>
-            <p
-              style={{
-                fontSize: "15px",
-                color: "#7a7a7a",
-                textAlign: "center",
-                maxWidth: "520px",
-                margin: "0 auto 72px",
-                lineHeight: 1.8,
-              }}
-            >
-              Shop Esteem on your preferred marketplace. Every platform offers
-              the same quality, same pricing, and same 24/7 customer support.
-            </p>
-          </Reveal>
-
-          <div
-            className="three-col"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "24px",
-            }}
-          >
-            <style>{`
-                @media (max-width: 1024px) {
-                  .three-col {
-                    grid-template-columns: 1fr 1fr !important;
-                  }
-                }
-                @media (max-width: 640px) {
-                  .three-col {
-                    grid-template-columns: 1fr !important;
-                  }
-                }
-              `}</style>
-
-            {[
-              {
-                name: "Amazon",
-                badge: "Prime Seller",
-                color: "#883D11",
-                desc: "Buy any 2 products from us on Amazon, get 10% off.",
-                links: [
-                  {
-                    label: "Esteem Innerwear",
-                    href: "https://www.amazon.in/storefront?me=A34AJOT31SQCLN",
-                  },
-                ],
-              },
-              {
-                name: "Flipkart",
-                badge: "Golden Seller",
-                color: "#2874F0",
-                desc: "Flipkart Plus benefits. Fast 2-day shipping across India.",
-                links: [
-                  {
-                    label: "Keyar Exports",
-                    href: "https://www.flipkart.com/search?q=ESTEEM%20innerwear&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off",
-                  },
-                ],
-              },
-              {
-                name: "Meesho",
-                badge: "Top Seller",
-                color: "#9B30D9",
-                desc: "Available all across India.",
-                links: [
-                  {
-                    label: "Keyar Exports",
-                    href: "https://www.meesho.com/KEYAREXPORTS",
-                  },
-                  {
-                    label: "ARS Clothing",
-                    href: "https://www.meesho.com/ARSCLOTHING",
-                  },
-                  {
-                    label: "Esteem Wears",
-                    href: "https://www.meesho.com/EsteemWears",
-                  },
-                ],
-              },
-            ].map((p, i) => (
-              <Reveal key={p.name} direction="up" delay={i * 0.12}>
-                <div
-                  style={{
-                    padding: "40px",
-                    background: "#fafaf7",
-                    border: "1px solid #e8e2d9",
-                    borderRadius: "4px",
-                    position: "relative",
-                    overflow: "hidden",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "48px",
-                      height: "2px",
-                      background: p.color,
-                      marginBottom: "16px",
-                    }}
-                  />
-                  <div
-                    style={{
-                      fontSize: "32px",
-                      fontWeight: 800,
-                      color: "#1a1a1a",
-                      fontFamily: "'Playfair Display', serif",
-                      marginBottom: "6px",
-                    }}
-                  >
-                    {p.name}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      letterSpacing: "0.1em",
-                      textTransform: "uppercase",
-                      color: p.color,
-                      marginBottom: "16px",
-                    }}
-                  >
-                    {p.badge}
-                  </div>
-                  <p
-                    style={{
-                      fontSize: "14px",
-                      color: "#7a7a7a",
-                      lineHeight: 1.75,
-                      margin: "0 0 24px",
-                    }}
-                  >
-                    {p.desc}
-                  </p>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "10px",
-                    }}
-                  >
-                    {p.links.map((link, j) => (
-                      <Reveal
-                        key={link.label}
-                        direction="up"
-                        delay={i * 0.12 + j * 0.08}
-                      >
-                        <Link
-                          href={link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="shop-link"
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "6px",
-                            fontSize: "18px",
-                            fontWeight: 700,
-                            letterSpacing: "0.1em",
-                            textTransform: "uppercase",
-                            color: p.color,
-                            textDecoration: "none",
-                            borderBottom: `1px solid ${p.color}`,
-                            paddingBottom: "2px",
-                            width: "fit-content",
-                          }}
-                        >
-                          {link.label}{" "}
-                          <span style={{ fontSize: "14px" }}>→</span>
-                        </Link>
-                      </Reveal>
-                    ))}
-                  </div>
-                  <p
-                    style={{
-                      fontSize: "14px",
-                      color: "#7a7a7a",
-                      lineHeight: 1.75,
-                      margin: "24px 0 0",
-                    }}
-                  >
-                    View on the above platform to shop our full collection and
-                    read reviews from
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </section>
-
-        {/* ── STATS ────────────────────────────────────────────────────── */}
-        <section
-          style={{
-            background: "#141414",
-            padding: "100px 48px",
-          }}
-        >
-          <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-            <Reveal direction="up">
-              <h2
                 style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "48px",
-                  fontWeight: 800,
-                  color: "#fff",
-                  letterSpacing: "-0.02em",
-                  textAlign: "center",
-                  marginBottom: "64px",
-                }}
-              >
-                By the Numbers
-              </h2>
-            </Reveal>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                gap: "24px",
-              }}
-            >
-              {[
-                { value: "30+", label: "Years in Textiles" },
-                { value: "10+", label: "Years Online" },
-                { value: "100K+", label: "Customer Reviews" },
-                { value: "4.1", label: "Average Rating" },
-                { value: "25+", label: "SKUs" },
-              ].map((stat, i) => (
-                <Reveal key={stat.label} direction="up" delay={i * 0.08}>
-                  <div
-                    style={{
-                      padding: "36px",
-                      border: "1px solid rgba(201,169,110,0.15)",
-                      borderRadius: "4px",
-                      textAlign: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontFamily: "'Playfair Display', serif",
-                        fontSize: "44px",
-                        fontWeight: 800,
-                        color: "#c9a96e",
-                        lineHeight: 1,
-                      }}
-                    >
-                      {stat.value}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "12px",
-                        color: "rgba(255,255,255,0.4)",
-                        marginTop: "12px",
-                        letterSpacing: "0.06em",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      {stat.label}
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── CONTACT CTA ───────────────────────────────────────────────── */}
-        <section
-          style={{
-            background: "#fafaf7",
-            padding: "100px 48px",
-            textAlign: "center",
-          }}
-        >
-          <div style={{ maxWidth: "680px", margin: "0 auto" }}>
-            <Reveal direction="up">
-              <h2
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "48px",
+                  fontFamily: "'Playfair Display',serif",
+                  fontSize: "72px",
                   fontWeight: 800,
                   color: "#1a1a1a",
-                  letterSpacing: "-0.02em",
-                  marginBottom: "20px",
+                  lineHeight: 1,
+                  letterSpacing: "-.03em",
                 }}
               >
-                Questions?
+                4.1
+                <span
+                  style={{ fontSize: "28px", color: "#bbb", fontWeight: 700 }}
+                >
+                  /5
+                </span>
+              </div>
+              <div
+                style={{
+                  fontSize: "13px",
+                  color: "#9a9a9a",
+                  marginTop: "12px",
+                  fontFamily: "'DM Sans',sans-serif",
+                  fontWeight: 500,
+                  letterSpacing: ".04em",
+                  textTransform: "uppercase",
+                }}
+              >
+                Average across 1,00,000+ verified reviews
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ── CTA ── */}
+        <section
+          style={{
+            background: "linear-gradient(150deg,#141414 0%,#1e1a16 100%)",
+            padding: "140px 48px",
+            textAlign: "center",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          {/* Concentric rings via box-shadow on a single div instead of 2 divs */}
+          <div
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%,-50%)",
+              width: "700px",
+              height: "700px",
+              borderRadius: "50%",
+              pointerEvents: "none",
+              boxShadow:
+                "0 0 0 200px rgba(201,169,110,.01), 0 0 0 1px rgba(201,169,110,.06), inset 0 0 0 200px rgba(201,169,110,.005), inset 0 0 0 1px rgba(201,169,110,.04)",
+            }}
+          />
+          <div
+            style={{
+              maxWidth: "680px",
+              margin: "0 auto",
+              position: "relative",
+            }}
+          >
+            <Reveal direction="up">
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: "16px",
+                  marginBottom: "24px",
+                }}
+              >
+                <div
+                  style={{
+                    width: "40px",
+                    height: "1px",
+                    background: "#c9a96e",
+                  }}
+                />
+                <span className="eyebrow">Shop Now</span>
+                <div
+                  style={{
+                    width: "40px",
+                    height: "1px",
+                    background: "#c9a96e",
+                  }}
+                />
+              </div>
+            </Reveal>
+            <Reveal direction="up" delay={0.1}>
+              <h2
+                style={{
+                  fontFamily: "'Playfair Display',serif",
+                  fontSize: "60px",
+                  fontWeight: 800,
+                  color: "#fff",
+                  lineHeight: 1.05,
+                  letterSpacing: "-.025em",
+                  marginBottom: "24px",
+                }}
+              >
+                Comfort Your Family
+                <br />
+                <em style={{ fontStyle: "italic", color: "#c9a96e" }}>
+                  Deserves.
+                </em>
               </h2>
             </Reveal>
-
-            <Reveal direction="up" delay={0.1}>
+            <Reveal direction="up" delay={0.2}>
               <p
                 style={{
-                  fontSize: "15px",
-                  color: "#7a7a7a",
+                  fontSize: "16px",
+                  color: "rgba(255,255,255,.45)",
                   lineHeight: 1.85,
-                  marginBottom: "36px",
+                  marginBottom: "48px",
+                  fontFamily: "'DM Sans',sans-serif",
                 }}
               >
-                Reach out to our customer care team at arsclothing18@gmail.com
-                or visit our FAQ section. We’re here to help, Monday to
-                Saturday, 9 AM to 6 PM IST.
+                Join over one lakh families who have made Esteem their everyday
+                choice. Shop our full collection on your preferred platform.
               </p>
             </Reveal>
-
-            <Reveal direction="up" delay={0.2}>
-              <a href="mailto:arsclothing18@gmail.com" className="cta-primary">
-                Get in Touch
+            <Reveal direction="up" delay={0.3}>
+              <a className="cta-primary" href="catalogue">
+                View our products
               </a>
             </Reveal>
           </div>
