@@ -117,16 +117,20 @@ const css = `
 export default function Catalogue() {
   const categories = [
     {
-      name: "Kids",
-      desc: "Ages 2 - 12",
-      icon: "👕",
-      products: "15+ Products",
-      slug: "kids",
+      name: "Boys",
+      desc: "Ages 2 - 14",
+      products: "10+ Products",
+      slug: "boys",
+    },
+    {
+      name: "Girls",
+      desc: "Ages 2 - 14",
+      products: "14+ Products",
+      slug: "girls",
     },
     {
       name: "Men",
-      desc: "Premium Comfort",
-      icon: "👔",
+      desc: "Fit for all",
       products: "4 Products",
       slug: "men",
     },
@@ -332,15 +336,6 @@ export default function Catalogue() {
                 <Link href={`/catalogue/${cat.slug}`}>
                   <div className="category-card">
                     <div style={{ textAlign: "center" }}>
-                      <div
-                        style={{
-                          fontSize: "64px",
-                          marginBottom: "16px",
-                          lineHeight: 1,
-                        }}
-                      >
-                        {cat.icon}
-                      </div>
                       <h3
                         style={{
                           fontSize: "28px",
