@@ -428,10 +428,10 @@ export default function About() {
                     marginBottom: "20px",
                   }}
                 >
-                  Starting from Tiruppur &mdash; India’s textile capital &mdash;
-                  Esteem grew organically by mastering the craft of innerwear.
-                  The brand focused obsessively on three pillars: 100% organic
-                  cotton, skin-safe dyes, and consistent sizing.
+                  Starting from Tiruppur - India’s textile capital - Esteem grew
+                  organically by mastering the craft of innerwear. The brand
+                  focused obsessively on three pillars: 100% organic cotton,
+                  skin-safe dyes, and consistent sizing.
                 </p>
               </Reveal>
 
@@ -445,8 +445,8 @@ export default function About() {
                 >
                   When e-commerce arrived, Esteem was ready. Within a decade
                   online, the brand achieved Prime Seller status on Amazon,
-                  Golden Seller on Flipkart, and Top Seller on Meesho &mdash;
-                  each badge earned through thousands of customer reviews and a
+                  Golden Seller on Flipkart, and Top Seller on Meesho - each
+                  badge earned through thousands of customer reviews and a
                   consistent 4.1+ rating.
                 </p>
               </Reveal>
@@ -697,10 +697,10 @@ export default function About() {
                       }}
                     >
                       Today, with his daughter and a dedicated team,
-                      Krishnaswamy oversees every aspect of the operation
-                      &mdash; from cotton sourcing to final dispatch. That
-                      hands-on philosophy, unchanged for decades, is why every
-                      piece bears his stamp of care.
+                      Krishnaswamy oversees every aspect of the operation - from
+                      cotton sourcing to final dispatch. That hands-on
+                      philosophy, unchanged for decades, is why every piece
+                      bears his stamp of care.
                     </p>
                   </div>
                 </div>
@@ -1115,6 +1115,13 @@ export default function About() {
                 </div>
               </Reveal>
             ))}
+            <Link
+              href="/catalogue"
+              className="cta-primary"
+              style={{ gridColumn: "1 / -1", justifySelf: "center" }}
+            >
+              Explore Collection
+            </Link>
           </div>
         </section>
 
@@ -1191,130 +1198,6 @@ export default function About() {
                 </Reveal>
               ))}
             </div>
-          </div>
-        </section>
-
-        {/* ── VISION ────────────────────────────────────────────────────── */}
-        <section
-          style={{
-            background:
-              "linear-gradient(150deg, #141414 0%, #1e1a16 60%, #241e18 100%)",
-            padding: "140px 48px",
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              pointerEvents: "none",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                width: "700px",
-                height: "700px",
-                border: "1px solid rgba(201,169,110,0.06)",
-                borderRadius: "50%",
-              }}
-            />
-          </div>
-
-          <div
-            style={{
-              maxWidth: "800px",
-              margin: "0 auto",
-              textAlign: "center",
-              position: "relative",
-            }}
-          >
-            <Reveal direction="up">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "12px",
-                  marginBottom: "24px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "40px",
-                    height: "1px",
-                    background: "#c9a96e",
-                  }}
-                />
-                <span
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: "#c9a96e",
-                  }}
-                >
-                  Looking Ahead
-                </span>
-                <div
-                  style={{
-                    width: "40px",
-                    height: "1px",
-                    background: "#c9a96e",
-                  }}
-                />
-              </div>
-            </Reveal>
-
-            <Reveal direction="up" delay={0.1}>
-              <h2
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "60px",
-                  fontWeight: 800,
-                  color: "#fff",
-                  lineHeight: 1.05,
-                  letterSpacing: "-0.025em",
-                  marginBottom: "24px",
-                }}
-              >
-                Our Vision
-                <br />
-                <em style={{ fontStyle: "italic", color: "#c9a96e" }}>
-                  for Tomorrow
-                </em>
-              </h2>
-            </Reveal>
-
-            <Reveal direction="up" delay={0.2}>
-              <p
-                style={{
-                  fontSize: "16px",
-                  color: "rgba(255,255,255,0.5)",
-                  lineHeight: 1.85,
-                  marginBottom: "48px",
-                }}
-              >
-                Esteem will expand its product range beyond innerwear into
-                everyday essentials &mdash; all guided by the same principles of
-                organic materials, ethical production, and family-first design.
-                We’re exploring direct-to-consumer channels while strengthening
-                partnerships with e-commerce platforms. Most importantly, we
-                remain committed to the craftspeople, farmers, and families
-                who’ve trusted us with their comfort.
-              </p>
-            </Reveal>
-
-            <Reveal direction="up" delay={0.3}>
-              <Link href="/catalogue" className="cta-primary">
-                Explore Collection
-              </Link>
-            </Reveal>
           </div>
         </section>
 
