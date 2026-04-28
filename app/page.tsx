@@ -1017,6 +1017,7 @@ export default function HomePage() {
           </div>
 
           <div
+            className="trust-section-inner"
             style={{
               maxWidth: "1280px",
               margin: "0 auto",
@@ -1179,13 +1180,25 @@ export default function HomePage() {
             </Reveal>
           </div>
 
-          {/* Float animation keyframes */}
+          {/* Float animation keyframes + mobile responsive */}
           <style>{`
-    @keyframes awardFloat {
-      0%, 100% { transform: translateY(0px); }
-      50%       { transform: translateY(-12px); }
-    }
-  `}</style>
+            @keyframes awardFloat {
+              0%, 100% { transform: translateY(0px); }
+              50%       { transform: translateY(-12px); }
+            }
+
+            @media (max-width: 768px) {
+              .trust-section-inner {
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center;
+              }
+              .stats-row {
+                flex-wrap: wrap;
+                justify-content: center;
+              }
+            }
+          `}</style>
         </section>
 
         {/* ── FEATURES ─────────────────────────────────────────────────── */}
