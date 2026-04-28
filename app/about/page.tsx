@@ -1030,18 +1030,52 @@ export default function About() {
                 badge: "Prime Seller",
                 color: "#FF9900",
                 desc: "Buy 2 products from us on Amazon, get 10% off.",
+                links: [
+                  {
+                    label: "Esteem Innerwear",
+                    href: "https://www.amazon.in/storefront?me=A34AJOT31SQCLN",
+                  },
+                ],
               },
               {
                 name: "Flipkart",
                 badge: "Golden Seller",
                 color: "#2874F0",
                 desc: "Flipkart Plus benefits. Fast 2-day shipping across India.",
+                links: [
+                  {
+                    label: "Shop Skincare",
+                    href: "https://flipkart.com/your-skincare",
+                  },
+                  {
+                    label: "Shop Haircare",
+                    href: "https://flipkart.com/your-haircare",
+                  },
+                  {
+                    label: "Shop Combos",
+                    href: "https://flipkart.com/your-combos",
+                  },
+                ],
               },
               {
                 name: "Meesho",
                 badge: "Top Seller",
                 color: "#9B30D9",
                 desc: "Available all across India.",
+                links: [
+                  {
+                    label: "Keyar Exports",
+                    href: "https://www.meesho.com/KEYAREXPORTS",
+                  },
+                  {
+                    label: "ARS Clothing",
+                    href: "https://www.meesho.com/ARSCLOTHING",
+                  },
+                  {
+                    label: "Esteem Wears",
+                    href: "https://www.meesho.com/EsteemWears",
+                  },
+                ],
               },
             ].map((p, i) => (
               <Reveal key={p.name} direction="up" delay={i * 0.12}>
@@ -1053,22 +1087,26 @@ export default function About() {
                     borderRadius: "4px",
                     transition: "all 0.3s ease",
                     cursor: "default",
+                    position: "relative",
+                    overflow: "hidden",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor =
-                      p.color;
-                    (e.currentTarget as HTMLDivElement).style.transform =
-                      "translateY(-6px)";
-                    (e.currentTarget as HTMLDivElement).style.boxShadow =
-                      `0 20px 60px rgba(0,0,0,0.08)`;
+                    const el = e.currentTarget as HTMLDivElement;
+                    el.style.borderColor = p.color;
+                    el.style.transform = "translateY(-6px)";
+                    el.style.boxShadow = "0 20px 60px rgba(0,0,0,0.08)";
+                    el.querySelectorAll<HTMLAnchorElement>(
+                      ".shop-link",
+                    ).forEach((link) => (link.style.opacity = "1"));
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLDivElement).style.borderColor =
-                      "#e8e2d9";
-                    (e.currentTarget as HTMLDivElement).style.transform =
-                      "translateY(0)";
-                    (e.currentTarget as HTMLDivElement).style.boxShadow =
-                      "none";
+                    const el = e.currentTarget as HTMLDivElement;
+                    el.style.borderColor = "#e8e2d9";
+                    el.style.transform = "translateY(0)";
+                    el.style.boxShadow = "none";
+                    el.querySelectorAll<HTMLAnchorElement>(
+                      ".shop-link",
+                    ).forEach((link) => (link.style.opacity = "0"));
                   }}
                 >
                   <div
@@ -1107,14 +1145,52 @@ export default function About() {
                       fontSize: "14px",
                       color: "#7a7a7a",
                       lineHeight: 1.75,
-                      margin: 0,
+                      margin: "0 0 24px",
                     }}
                   >
                     {p.desc}
                   </p>
+
+                  {/* ── 3 shop links — all fade in on hover ── */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "10px",
+                    }}
+                  >
+                    {p.links.map((link) => (
+                      <Link
+                        key={link.label}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shop-link"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          fontSize: "12px",
+                          fontWeight: 700,
+                          letterSpacing: "0.1em",
+                          textTransform: "uppercase",
+                          color: p.color,
+                          textDecoration: "none",
+                          opacity: 0,
+                          transition: "opacity 0.3s ease",
+                          borderBottom: `1px solid ${p.color}`,
+                          paddingBottom: "2px",
+                          width: "fit-content",
+                        }}
+                      >
+                        {link.label} <span style={{ fontSize: "14px" }}>→</span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </Reveal>
             ))}
+
             <Link
               href="/catalogue"
               className="cta-primary"
@@ -1234,14 +1310,14 @@ export default function About() {
                   marginBottom: "36px",
                 }}
               >
-                Reach out to our customer care team at ashclothing@gmail.com or
-                visit our FAQ section. We’re here to help, Monday to Saturday, 9
-                AM to 6 PM IST.
+                Reach out to our customer care team at arsclothing18@gmail.com
+                or visit our FAQ section. We’re here to help, Monday to
+                Saturday, 9 AM to 6 PM IST.
               </p>
             </Reveal>
 
             <Reveal direction="up" delay={0.2}>
-              <a href="mailto:ashclothing@gmail.com" className="cta-primary">
+              <a href="mailto:arsclothing18@gmail.com" className="cta-primary">
                 Get in Touch
               </a>
             </Reveal>

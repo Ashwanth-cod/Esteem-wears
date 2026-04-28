@@ -119,7 +119,7 @@ export default function Catalogue() {
     {
       name: "Boys",
       desc: "Ages 2 - 14",
-      products: "10+ Products",
+      products: "10 Products",
       slug: "boys",
     },
     {

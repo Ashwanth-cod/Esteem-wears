@@ -2,7 +2,7 @@ import json
 import os
 import re
 
-FILE_PATH = "kids.json"
+FILE_PATH = "boys.json"
 
 def load_data():
     if not os.path.exists(FILE_PATH):
