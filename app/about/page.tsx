@@ -1024,12 +1024,25 @@ export default function About() {
               gap: "24px",
             }}
           >
+            <style>{`
+                @media (max-width: 1024px) {
+                  .three-col {
+                    grid-template-columns: 1fr 1fr !important;
+                  }
+                }
+                @media (max-width: 640px) {
+                  .three-col {
+                    grid-template-columns: 1fr !important;
+                  }
+                }
+              `}</style>
+
             {[
               {
                 name: "Amazon",
                 badge: "Prime Seller",
-                color: "#FF9900",
-                desc: "Buy 2 products from us on Amazon, get 10% off.",
+                color: "#883D11",
+                desc: "Buy any 2 products from us on Amazon, get 10% off.",
                 links: [
                   {
                     label: "Esteem Innerwear",
@@ -1044,16 +1057,8 @@ export default function About() {
                 desc: "Flipkart Plus benefits. Fast 2-day shipping across India.",
                 links: [
                   {
-                    label: "Shop Skincare",
-                    href: "https://flipkart.com/your-skincare",
-                  },
-                  {
-                    label: "Shop Haircare",
-                    href: "https://flipkart.com/your-haircare",
-                  },
-                  {
-                    label: "Shop Combos",
-                    href: "https://flipkart.com/your-combos",
+                    label: "Keyar Exports",
+                    href: "https://www.flipkart.com/search?q=ESTEEM%20innerwear&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off",
                   },
                 ],
               },
@@ -1085,28 +1090,8 @@ export default function About() {
                     background: "#fafaf7",
                     border: "1px solid #e8e2d9",
                     borderRadius: "4px",
-                    transition: "all 0.3s ease",
-                    cursor: "default",
                     position: "relative",
                     overflow: "hidden",
-                  }}
-                  onMouseEnter={(e) => {
-                    const el = e.currentTarget as HTMLDivElement;
-                    el.style.borderColor = p.color;
-                    el.style.transform = "translateY(-6px)";
-                    el.style.boxShadow = "0 20px 60px rgba(0,0,0,0.08)";
-                    el.querySelectorAll<HTMLAnchorElement>(
-                      ".shop-link",
-                    ).forEach((link) => (link.style.opacity = "1"));
-                  }}
-                  onMouseLeave={(e) => {
-                    const el = e.currentTarget as HTMLDivElement;
-                    el.style.borderColor = "#e8e2d9";
-                    el.style.transform = "translateY(0)";
-                    el.style.boxShadow = "none";
-                    el.querySelectorAll<HTMLAnchorElement>(
-                      ".shop-link",
-                    ).forEach((link) => (link.style.opacity = "0"));
                   }}
                 >
                   <div
@@ -1119,7 +1104,7 @@ export default function About() {
                   />
                   <div
                     style={{
-                      fontSize: "22px",
+                      fontSize: "32px",
                       fontWeight: 800,
                       color: "#1a1a1a",
                       fontFamily: "'Playfair Display', serif",
@@ -1151,7 +1136,6 @@ export default function About() {
                     {p.desc}
                   </p>
 
-                  {/* ── 3 shop links — all fade in on hover ── */}
                   <div
                     style={{
                       display: "flex",
@@ -1159,45 +1143,52 @@ export default function About() {
                       gap: "10px",
                     }}
                   >
-                    {p.links.map((link) => (
-                      <Link
+                    {p.links.map((link, j) => (
+                      <Reveal
                         key={link.label}
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="shop-link"
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "6px",
-                          fontSize: "12px",
-                          fontWeight: 700,
-                          letterSpacing: "0.1em",
-                          textTransform: "uppercase",
-                          color: p.color,
-                          textDecoration: "none",
-                          opacity: 0,
-                          transition: "opacity 0.3s ease",
-                          borderBottom: `1px solid ${p.color}`,
-                          paddingBottom: "2px",
-                          width: "fit-content",
-                        }}
+                        direction="up"
+                        delay={i * 0.12 + j * 0.08}
                       >
-                        {link.label} <span style={{ fontSize: "14px" }}>→</span>
-                      </Link>
+                        <Link
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="shop-link"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "6px",
+                            fontSize: "18px",
+                            fontWeight: 700,
+                            letterSpacing: "0.1em",
+                            textTransform: "uppercase",
+                            color: p.color,
+                            textDecoration: "none",
+                            borderBottom: `1px solid ${p.color}`,
+                            paddingBottom: "2px",
+                            width: "fit-content",
+                          }}
+                        >
+                          {link.label}{" "}
+                          <span style={{ fontSize: "14px" }}>→</span>
+                        </Link>
+                      </Reveal>
                     ))}
                   </div>
+                  <p
+                    style={{
+                      fontSize: "14px",
+                      color: "#7a7a7a",
+                      lineHeight: 1.75,
+                      margin: "24px 0 0",
+                    }}
+                  >
+                    View on the above platform to shop our full collection and
+                    read reviews from
+                  </p>
                 </div>
               </Reveal>
             ))}
-
-            <Link
-              href="/catalogue"
-              className="cta-primary"
-              style={{ gridColumn: "1 / -1", justifySelf: "center" }}
-            >
-              Explore Collection
-            </Link>
           </div>
         </section>
 

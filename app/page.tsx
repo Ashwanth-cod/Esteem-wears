@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 function useInView(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
@@ -400,12 +401,6 @@ const FEATURES = [
     title: "Reliable Supply",
     desc: "Strong operational backbone ensures products are always in stock — fast dispatch, no delays.",
   },
-];
-
-const PLATFORMS = [
-  { name: "Amazon", badge: "Prime Seller", color: "#FF9900" },
-  { name: "Flipkart", badge: "Golden Seller", color: "#2874F0" },
-  { name: "Meesho", badge: "Top Seller", color: "#9B30D9" },
 ];
 
 const HERO_STATS = [
@@ -1020,79 +1015,177 @@ export default function HomePage() {
               />
             ))}
           </div>
-          <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-            <Reveal direction="up">
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "16px",
-                  marginBottom: "16px",
-                }}
-              >
+
+          <div
+            style={{
+              maxWidth: "1280px",
+              margin: "0 auto",
+              display: "flex",
+              alignItems: "center",
+              gap: "64px",
+            }}
+          >
+            {/* ── Left: text + stats ── */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <Reveal direction="up">
                 <div
                   style={{
-                    width: "40px",
-                    height: "1px",
-                    background: "#c9a96e",
-                  }}
-                />
-                <span
-                  style={{
-                    fontSize: "11px",
-                    fontWeight: 700,
-                    letterSpacing: "0.18em",
-                    textTransform: "uppercase",
-                    color: "#c9a96e",
-                    fontFamily: "'DM Sans', sans-serif",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "16px",
+                    marginBottom: "16px",
                   }}
                 >
-                  By the Numbers
-                </span>
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "1px",
+                      background: "#c9a96e",
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      letterSpacing: "0.18em",
+                      textTransform: "uppercase",
+                      color: "#c9a96e",
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    By the Numbers
+                  </span>
+                </div>
+              </Reveal>
+
+              <Reveal direction="up" delay={0.1}>
+                <h2
+                  style={{
+                    fontFamily: "'Playfair Display', serif",
+                    fontSize: "52px",
+                    fontWeight: 800,
+                    color: "#fff",
+                    letterSpacing: "-0.02em",
+                    marginBottom: "72px",
+                  }}
+                >
+                  Trust, Measured.
+                </h2>
+              </Reveal>
+
+              <div className="stats-row" style={{ display: "flex" }}>
+                <StatCard
+                  value={100000}
+                  suffix="+"
+                  label="Customer Reviews"
+                  delay={0.1}
+                />
+                <StatCard
+                  value={4}
+                  suffix=".1+"
+                  label="Avg Rating"
+                  delay={0.15}
+                />
+                <StatCard
+                  value={40}
+                  suffix="+"
+                  label="Years Expertise"
+                  delay={0.2}
+                />
+                <StatCard
+                  value={10}
+                  suffix="+"
+                  label="Years Online"
+                  delay={0.3}
+                />
               </div>
-            </Reveal>
-            <Reveal direction="up" delay={0.1}>
-              <h2
+            </div>
+
+            {/* ── Right: floating award image ── */}
+            <Reveal direction="up" delay={0.2}>
+              <div
                 style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: "52px",
-                  fontWeight: 800,
-                  color: "#fff",
-                  letterSpacing: "-0.02em",
-                  marginBottom: "72px",
+                  flexShrink: 0,
+                  width: "260px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "20px",
                 }}
               >
-                Trust, Measured.
-              </h2>
-            </Reveal>
+                {/* Glow ring behind the award */}
+                <div
+                  style={{
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "absolute",
+                      width: "220px",
+                      height: "220px",
+                      borderRadius: "50%",
+                      background:
+                        "radial-gradient(circle, rgba(201,169,110,0.18) 0%, transparent 70%)",
+                    }}
+                  />
+                  <Image
+                    src="https://res.cloudinary.com/desmywzoz/image/upload/v1777385399/gold_seller_shbjad.png"
+                    alt="Award"
+                    width={180}
+                    height={180}
+                    style={{
+                      width: "350px",
+                      height: "auto",
+                      objectFit: "contain",
+                      position: "relative",
+                      zIndex: 1,
+                      filter: "drop-shadow(0 8px 32px rgba(201,169,110,0.35))",
+                      animation: "awardFloat 4s ease-in-out infinite",
+                    }}
+                  />
+                </div>
 
-            <div className="stats-row" style={{ display: "flex" }}>
-              <StatCard
-                value={100000}
-                suffix="+"
-                label="Customer Reviews"
-                delay={0.1}
-              />
-              <StatCard
-                value={4}
-                suffix=".1+"
-                label="Avg Rating"
-                delay={0.15}
-              />
-              <StatCard
-                value={40}
-                suffix="+"
-                label="Years Expertise"
-                delay={0.2}
-              />
-              <StatCard
-                value={10}
-                suffix="+"
-                label="Years Online"
-                delay={0.3}
-              />
-            </div>
+                {/* Caption below the award */}
+                <div style={{ textAlign: "center" }}>
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      letterSpacing: "0.14em",
+                      textTransform: "uppercase",
+                      color: "#c9a96e",
+                      fontFamily: "'DM Sans', sans-serif",
+                      marginBottom: "6px",
+                    }}
+                  >
+                    Gold seller Excellence
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "13px",
+                      color: "rgba(255,255,255,0.4)",
+                      fontFamily: "'DM Sans', sans-serif",
+                      lineHeight: 1.6,
+                    }}
+                  >
+                    Top Seller on Flipkart.
+                  </div>
+                </div>
+              </div>
+            </Reveal>
           </div>
+
+          {/* Float animation keyframes */}
+          <style>{`
+    @keyframes awardFloat {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-12px); }
+    }
+  `}</style>
         </section>
 
         {/* ── FEATURES ─────────────────────────────────────────────────── */}
@@ -1244,34 +1337,98 @@ export default function HomePage() {
             </div>
 
             <div
-              className="platform-grid"
+              className="three-col"
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
-                gap: "20px",
-                maxWidth: "760px",
-                margin: "0 auto 80px",
+                gap: "24px",
               }}
             >
-              {PLATFORMS.map((p, i) => (
-                <Reveal key={p.name} delay={i * 0.12} direction="up">
-                  <div className="platform-pill">
+              <style>{`
+                @media (max-width: 1024px) {
+                  .three-col {
+                    grid-template-columns: 1fr 1fr !important;
+                  }
+                }
+                @media (max-width: 640px) {
+                  .three-col {
+                    grid-template-columns: 1fr !important;
+                  }
+                }
+              `}</style>
+
+              {[
+                {
+                  name: "Amazon",
+                  badge: "Prime Seller",
+                  color: "#883D11",
+                  desc: "Buy any 2 products from us on Amazon, get 10% off.",
+                  links: [
+                    {
+                      label: "Esteem Innerwear",
+                      href: "https://www.amazon.in/storefront?me=A34AJOT31SQCLN",
+                    },
+                  ],
+                },
+                {
+                  name: "Flipkart",
+                  badge: "Golden Seller",
+                  color: "#2874F0",
+                  desc: "Flipkart Plus benefits. Fast 2-day shipping across India.",
+                  links: [
+                    {
+                      label: "Keyar Exports",
+                      href: "https://www.flipkart.com/search?q=ESTEEM%20innerwear&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off",
+                    },
+                  ],
+                },
+                {
+                  name: "Meesho",
+                  badge: "Top Seller",
+                  color: "#9B30D9",
+                  desc: "Available all across India.",
+                  links: [
+                    {
+                      label: "Keyar Exports",
+                      href: "https://www.meesho.com/KEYAREXPORTS",
+                    },
+                    {
+                      label: "ARS Clothing",
+                      href: "https://www.meesho.com/ARSCLOTHING",
+                    },
+                    {
+                      label: "Esteem Wears",
+                      href: "https://www.meesho.com/EsteemWears",
+                    },
+                  ],
+                },
+              ].map((p, i) => (
+                <Reveal key={p.name} direction="up" delay={i * 0.12}>
+                  <div
+                    style={{
+                      padding: "40px",
+                      background: "#fafaf7",
+                      border: "1px solid #e8e2d9",
+                      borderRadius: "4px",
+                      position: "relative",
+                      overflow: "hidden",
+                    }}
+                  >
                     <div
                       style={{
                         width: "48px",
-                        height: "3px",
+                        height: "2px",
                         background: p.color,
-                        borderRadius: "2px",
-                        marginBottom: "4px",
+                        marginBottom: "16px",
                       }}
                     />
                     <div
                       style={{
-                        fontSize: "18px",
+                        fontSize: "32px",
                         fontWeight: 800,
                         color: "#1a1a1a",
-                        fontFamily: "'DM Sans', sans-serif",
-                        letterSpacing: "-0.01em",
+                        fontFamily: "'Playfair Display', serif",
+                        marginBottom: "6px",
                       }}
                     >
                       {p.name}
@@ -1283,11 +1440,72 @@ export default function HomePage() {
                         letterSpacing: "0.1em",
                         textTransform: "uppercase",
                         color: p.color,
-                        fontFamily: "'DM Sans', sans-serif",
+                        marginBottom: "16px",
                       }}
                     >
                       {p.badge}
                     </div>
+                    <p
+                      style={{
+                        fontSize: "14px",
+                        color: "#7a7a7a",
+                        lineHeight: 1.75,
+                        margin: "0 0 24px",
+                      }}
+                    >
+                      {p.desc}
+                    </p>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "10px",
+                      }}
+                    >
+                      {p.links.map((link, j) => (
+                        <Reveal
+                          key={link.label}
+                          direction="up"
+                          delay={i * 0.12 + j * 0.08}
+                        >
+                          <Link
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="shop-link"
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "6px",
+                              fontSize: "18px",
+                              fontWeight: 700,
+                              letterSpacing: "0.1em",
+                              textTransform: "uppercase",
+                              color: p.color,
+                              textDecoration: "none",
+                              borderBottom: `1px solid ${p.color}`,
+                              paddingBottom: "2px",
+                              width: "fit-content",
+                            }}
+                          >
+                            {link.label}{" "}
+                            <span style={{ fontSize: "14px" }}>→</span>
+                          </Link>
+                        </Reveal>
+                      ))}
+                    </div>
+                    <p
+                      style={{
+                        fontSize: "14px",
+                        color: "#7a7a7a",
+                        lineHeight: 1.75,
+                        margin: "24px 0 0",
+                      }}
+                    >
+                      View on the above platform to shop our full collection and
+                      read reviews from
+                    </p>
                   </div>
                 </Reveal>
               ))}

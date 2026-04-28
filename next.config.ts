@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: [
-    "192.168.29.101",
+    "192.168.29.60",
     "esteemwears.in",
     "www.esteemwears.in",
     "esteemwears.netlify.app",

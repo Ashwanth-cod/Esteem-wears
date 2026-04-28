@@ -119,19 +119,19 @@ export default function Catalogue() {
     {
       name: "Boys",
       desc: "Ages 2 - 14",
-      products: "10 Products",
+      products: "10+ Products",
       slug: "boys",
     },
     {
       name: "Girls",
       desc: "Ages 2 - 14",
-      products: "14+ Products",
+      products: "4+ Products",
       slug: "girls",
     },
     {
       name: "Men",
       desc: "Fit for all",
-      products: "4 Products",
+      products: "4+ Products",
       slug: "men",
     },
   ];
