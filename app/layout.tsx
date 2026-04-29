@@ -1,6 +1,7 @@
 import "./globals.css";
 import dynamic from "next/dynamic";
 import type { Metadata, Viewport } from "next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // 🚀 Lazy load non-critical components
 const Navbar = dynamic(() => import("@/components/Navbar"), {
@@ -97,6 +98,7 @@ export default function RootLayout({
 
         <Footer />
       </body>
+      <SpeedInsights />
     </html>
   );
 }
